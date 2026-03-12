@@ -158,3 +158,5 @@ plot(t)
 
 
 writeRaster(sed,'output_data/sediment.tif',overwrite=T)
+
+save(sed,accuracy,pts_acc,pts_interp,file='rda/01_interp_sediment.Rda')
