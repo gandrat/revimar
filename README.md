@@ -4,7 +4,7 @@ An automated, reproducible R-based geospatial pipeline for classifying, integrat
 
 Built to support historical oceanographic data recovery (**Revimar** project) and provide foundational ecological layers for Marine Spatial Planning (**PEM Sul** and broader Brazilian MSP initiatives), this repository processes geomorphological, bathymetric, and sedimentological data to generate publication-ready habitat maps and statistics.
 
-## 📌 Project Overview
+## Project Overview
 
 This pipeline translates raw spatial data into a standardized, ecologically meaningful benthic habitat classification system. It utilizes high-resolution raster math and map algebra via the `terra` package to seamlessly cross physical structure (geomorphology and light penetration) with substrate texture (Folk, 1954).
 
