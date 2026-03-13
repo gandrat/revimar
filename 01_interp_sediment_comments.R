@@ -196,6 +196,3 @@ plot(t, main = "Spatial Distribution of Sediment Sum")
 
 # Exporting the multi-band raster
 writeRaster(sed, 'output_data/sediment.tif', overwrite = TRUE)
-
-# Saving the R workspace objects for easy retrieval during the Folk classification step
-save(sed, accuracy, pts_acc, pts_interp, file = 'rda/01_interp_sediment.Rda')

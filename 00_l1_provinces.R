@@ -81,7 +81,7 @@ not_shelf<-ifel(is.na(shelf_clean),1,NA)
 not_shelf<-mask(not_shelf,mask)
 plot(not_shelf)
 
-writeRaster(shelf_clean,'output_data/shelf.tif')
+# writeRaster(shelf_clean,'output_data/shelf.tif')
 
 ## 4.2 Slope ----
 
@@ -141,5 +141,57 @@ geomorphology<-cover(geomorphology,basin)
 plot(geomorphology)
 
 
-# 5. Exporting the Unified Map ----
-writeRaster(geomorphology, 'output_data/benthic_geomorphology.tif', overwrite = TRUE)
+# 5. Adding seamounts ----
+# Load the seamounts shapefile  generated in QGIS
+seamounts_vec <- read_sf('input_data/seamounts_v2.shp')
+seamounts_vec<-st_transform(seamounts_vec,crs_albers_brasil)
+seamounts_rast <- rasterize(seamounts_vec, mask, field = 4, background = NA)
+plot(seamounts_rast)
+
+geomorphology<-cover(seamounts_rast,geomorphology)
+
+
+# 6. Exporting Figure ----
+geomorphology<-rast('output_data/benthic_geomorphology.tif')
+geomorphology<-as.factor(geomorphology)
+
+color_table_geo <- data.frame(
+  value = c(1, 2, 3, 4),
+  color = c(
+    "#00FFFF",  # 1: Continental Shelf (Cyan - representing shallow water)
+    "#FFA500",  # 2: Continental Slope (Orange - representing steep transition)
+    "#000050",  # 3: Oceanic Basin (Navy - representing deep abyssal areas)
+    "#FF4500"   # 4: Seamounts (Red - highlighting isolated topographic peaks)
+  )
+)
+
+# The coltab() function embeds these colors directly into the raster's metadata
+coltab(geomorphology) <- color_table_geo
+
+# Create the new, simplified Raster Attribute Table (RAT)
+habitat_table <- data.frame(
+  ID = c(1, 2, 3, 4),
+  Habitat_Zone = c(
+    "A. Continental Shelf",
+    "B. Slope", 
+    "C. Oceanic Basin",
+    "D. Seamount"
+  )
+)
+
+levels(geomorphology) <- habitat_table
+
+
+geomorphology<-rast('output_data/benthic_geomorphology_v2.tif')
+
+jpeg(filename = "figures/benthic_geomorphology_l1.jpg", 
+     width = 18,       # Width of the image
+     height = 17,       # Height of the image
+     units = "cm",     # Units for width/height (inches)
+     res = 300)        # Resolution in pixels per inch
+plot(geomorphology, main = "Provinces (L1)",
+     mar = c(3, 3, 3, 17))
+dev.off()
+
+# 7. Exporting data ----
+writeRaster(geomorphology, 'output_data/benthic_geomorphology_v2.tif', overwrite = TRUE)

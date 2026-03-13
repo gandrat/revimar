@@ -13,8 +13,6 @@ package.check <- lapply(packages, FUN = function(x) {
 
 
 # 1. Loading Environment and Data ----
-
-
 # Load the workspace from the interpolation script
 sed<-rast('output_data/sediment.tif')
 plot(sed)
