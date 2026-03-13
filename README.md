@@ -1,4 +1,4 @@
-# Benthic Habitat Mapping of the Brazilian Margin 🌊🗺️
+# Benthic Habitat Mapping of the Brazilian Margin
 
 An automated, reproducible R-based geospatial pipeline for classifying, integrating, and visualizing benthic habitats along the Brazilian continental margin. 
 
