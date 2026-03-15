@@ -53,7 +53,7 @@ zeu_bat <- zeu_med >= (bat * -1)
 
 plot(zeu_bat, main = "Euphotic Benthos (1 = Light Reaches Bottom)")
 
-writeRaster(zeu_bat,'output_data/euphotic_zone.tif',overwrite=T)
+writeRaster(zeu_bat,'output_data/l0_euphotic_zone.tif',overwrite=T)
 
 # 5. Overlapping with Geomorphology (Habitat Zones) ----
 # First, convert the TRUE/FALSE boolean raster into numeric 1 (Euphotic) and 0 (Aphotic)
@@ -155,13 +155,15 @@ coltab(geom_photic) <- color_table
 # Visualization
 geom_photic<-rast('output_data/geomorphology_photic_zones_v2.tif')
 
-jpeg(filename = "figures/benthic_geomorphology_l2.jpg", 
-     width = 18,       # Width of the image
-     height = 17,       # Height of the image
+jpeg(filename = "figures/l2_map_geomorphology_photic.jpg", 
+     width = 40,       # Width of the image
+     height = 50,       # Height of the image
      units = "cm",     # Units for width/height (inches)
      res = 300)        # Resolution in pixels per inch
 plot(geom_photic, main = "Photic Zone (L2)",
-     mar = c(3, 3, 3, 17))
+     mar = c(3, 3, 3, 25),
+     cex.main = 3,
+     plg = list(cex = 2))
 dev.off()
 
 # 7. Statistical Summary and Export (km²) ----
@@ -231,12 +233,15 @@ ggplot(plot_data, aes(x = Habitat_Zone, y = count / sum(count), fill = Habitat_Z
     panel.grid.major.y = element_blank(), # Remove vertical grid lines for a cleaner look
     panel.grid.major.x = element_blank()
   )
-ggsave('figures/benthic_habitat_level2.jpg',width = 20, height = 12, dpi=150, units = 'cm')
+ggsave('figures/l2_plot_area.jpg',width = 20, height = 12, dpi=150, units = 'cm')
 
 
 # 8. Export data ----
 # Export the final combined raster
-writeRaster(geom_photic, 'output_data/geomorphology_photic_zones_v2.tif', overwrite = TRUE)
+writeRaster(geom_photic, 
+            'output_data/l2_geomorphology_photic_zones_v2.tif', 
+            datatype = "INT2U",
+            overwrite = TRUE)
 
 # Export the summary table as a CSV for your technical report
 write.csv(photic_summary, 'output_data/habitat_area_summary.csv', row.names = FALSE)

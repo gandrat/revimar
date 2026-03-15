@@ -184,14 +184,19 @@ levels(geomorphology) <- habitat_table
 
 geomorphology<-rast('output_data/benthic_geomorphology_v2.tif')
 
-jpeg(filename = "figures/benthic_geomorphology_l1.jpg", 
-     width = 18,       # Width of the image
-     height = 17,       # Height of the image
+jpeg(filename = "figures/l1_map_geomorphology.jpg", 
+     width = 40,       # Width of the image
+     height = 50,       # Height of the image
      units = "cm",     # Units for width/height (inches)
      res = 300)        # Resolution in pixels per inch
 plot(geomorphology, main = "Provinces (L1)",
-     mar = c(3, 3, 3, 17))
+     mar = c(3, 3, 3, 25),
+     cex.main = 3,
+     plg = list(cex = 2))
 dev.off()
 
 # 7. Exporting data ----
-writeRaster(geomorphology, 'output_data/benthic_geomorphology_v2.tif', overwrite = TRUE)
+writeRaster(geomorphology, 
+            'output_data/benthic_geomorphology_v3.tif',
+            datatype = "INT2U",
+            overwrite = TRUE)
