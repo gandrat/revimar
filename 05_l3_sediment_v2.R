@@ -27,7 +27,7 @@ habitats <- ifel(
   geom_photic * 100
 )
 
-
+plot(habitats)
 # 3. Generating the Attribute Tables ----
 # Define the structural zones that will receive sediment data
 base_zones <- data.frame(
@@ -113,7 +113,7 @@ final_color_table <- bind_rows(habitat_colors, deep_water_colors) %>%
   arrange(value)
 
 
-# 5. THE BULLETPROOF FIX: Filtering and Applying Levels ----
+# 5. Filtering and Applying Levels ----
 # Convert to factor first so terra builds its internal index of existing values
 habitats <- as.factor(habitats)
 
@@ -125,17 +125,21 @@ colnames(active_rat)[1] <- "ID"
 updated_rat <- active_rat %>%
   left_join(habitat_table, by = "ID") %>%
   as.data.frame()
+# Re-apply the perfectly matched names
 
 # Re-apply the perfectly matched names
-levels(habitats) <- updated_rat%>%select(ID, Habitat_Name)
-# 
-# # Do the exact same foolproof join for the Color Table
-# safe_color_table <- data.frame(value = active_rat$ID) %>%
-#   left_join(final_color_table, by = "value") %>%
-#   as.data.frame()
-# 
-# # Apply the perfectly matched colors
-# coltab(habitats) <- safe_color_table
+levels(habitats) <- updated_rat
+
+# Do the exact same foolproof join for the Color Table
+safe_color_table <- data.frame(value = active_rat$ID) %>%
+  left_join(final_color_table, by = "value") %>%
+  as.data.frame()
+
+# Apply the perfectly matched colors
+coltab(habitats) <- safe_color_table
+
+plot(habitats)
+
 
 # 6. Visualization & Export ----
 jpeg(filename = "figures/l3_benthic_habitats.jpg", 
@@ -145,15 +149,56 @@ jpeg(filename = "figures/l3_benthic_habitats.jpg",
      res = 300)         # Resolution in pixels per inch
 
 # Plotting with layout adjustments for long legend names
+# Plotting with layout adjustments and explicitly calling the labels
 plot(habitats, 
      main = "Benthic Habitats (L3)",
+     type = "classes",  
+     col = final_rat$color,  
+     levels = updated_rat$Habitat_Name,          # Injeta os nomes corretos na legenda
      mar = c(3, 3, 3, 25),
      cex.main = 3,
-     plg = list(cex = 2))
+     plg = list(cex = 2))                     
 
 dev.off()
 
 # Export the true, filtered maps and legends
 # Using datatype INT2U to support IDs greater than 255 (prevents truncation warnings)
-writeRaster(habitats, 'output_data/benthic_habitats_v1.tif', datatype = "INT2U", overwrite = TRUE)
-write.csv(updated_rat, 'output_data/benthic_habitats_legend.csv', row.names = FALSE)
+writeRaster(habitats, 'output_data/l3_benthic_habitats_v1.tif', 
+            overwrite = TRUE)
+write.csv(updated_rat, 'output_data/l3_benthic_habitats_legend.csv', row.names = FALSE)
+
+
+
+
+# 6. Safe Exporting (8-bit GeoTIFF with Embedded Color Table) ----
+
+# Step A: Convert the factor raster back to raw numbers (stripping the categorical metadata)
+hab_numeric <- as.numeric(habitats)
+
+# Step B: Create a strict reclassification matrix
+# Column 1 = Old high IDs (101, 300, 700...)
+# Column 2 = New sequential 8-bit IDs (1, 2, 3...)
+final_rat$Export_ID <- 1:nrow(final_rat)
+rcl_matrix <- as.matrix(final_rat[, c("ID", "Export_ID")])
+
+# Step C: Reclassify! 
+# The 'others = NA' argument is the safety net. It guarantees that any stray pixel 
+# not in our master table is converted to NA, physically preventing the INT1U warning.
+habitats_export <- classify(hab_numeric, rcl_matrix, others = NA)
+
+# Step D: Convert back to a categorical factor and apply the NEW metadata
+habitats_export <- as.factor(habitats_export)
+
+# Apply the names mapped to the new Export_ID
+levels(habitats_export) <- final_rat[, c("Export_ID", "Habitat_Name")]
+
+# Apply the colors mapped to the new Export_ID
+coltab(habitats_export) <- final_rat[, c("Export_ID", "color")]
+
+# Step E: Final Export
+# With absolutely no values above 255 remaining, INT1U will execute perfectly,
+# and the color palette will be permanently embedded in the GeoTIFF.
+writeRaster(habitats_export, 
+            'output_data/l3_benthic_habitats_v1.tif', 
+            datatype = "INT1U", 
+            overwrite = TRUE)

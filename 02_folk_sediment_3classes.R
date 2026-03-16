@@ -1,7 +1,7 @@
 ## Benthic Habitat Classification Script (Simplified Folk 5-Class)
 ## Requires the interpolated output from 01_interp_sediment.Rda
 
-packages <- c('terra', 'dplyr','sf')
+packages <- c('terra', 'dplyr','sf','ggplot2','scales')
 
 package.check <- lapply(packages, FUN = function(x) {
   if (!require(x, character.only = TRUE)) {
@@ -42,6 +42,7 @@ sed_norm <- c(sand_norm, mud_norm, gravel_norm)
 writeRaster(sed_norm, 'output_data/l0_sediment_norm.tif', overwrite = TRUE)
 
 
+
 # 3. Calculate Sand/Mud Ratio (Diagram X-Axis) ----
 # Summing normalized sand and mud
 sum_sand_mud <- sand_norm + mud_norm
@@ -68,8 +69,10 @@ writeRaster(bio, 'input_data/biogenico.tif')
 
 # 4. Apply Simplified Boundaries with Binary Biogenic Tier (4 Classes) ----
 # Tier 0 intercepts any pixel where the biogenic flag is 1 (True).
+bio<-rast('input_data/biogenico.tif')
 
 # (Assumindo que você carregou o raster binário como 'bio' na etapa 1)
+
 folk_classes <- 
   
   # --- TIER 0: Biogenic (Binary flag == 1) ---
@@ -87,8 +90,10 @@ folk_classes <-
                       NA )))) # Close all parentheses.
 
 writeRaster(folk_classes,
-            'output_data/l0_sediment_folk_4.tif',
+            'output_data/l0_sediment_folk_4_v2.tif',
             overwrite=T)
+
+folk_classes<-rast('output_data/l0_folk_classification_biogenic4.tif')
 hist(folk_classes)
 # 5. Convert to Categorical Raster (Metadata) ----
 folk_classes <- as.factor(folk_classes)
@@ -134,7 +139,53 @@ plot(folk_classes, main = "Sediments (Biogenic + 3 Class Folk)",
      plg = list(cex = 2))
 dev.off()
 
-
+plot(folk_classes)
 writeRaster(folk_classes, 
             'output_data/l0_folk_classification_biogenic4.tif', 
             overwrite = TRUE)
+
+# 7. Calculate Area ----
+# Define the exact same colors and names used in the sediment map
+folk_colors_df <- data.frame(
+  value = 1:4, 
+  Habitat = c("Muddy", "Sandy", "Gravel", "Biogenic"),
+  color = c("#4A7A40", "#FCE47F", "#B95246", "#DDA0DD")
+)
+
+# 7.1. Calculate Area ----
+# Because the raster is in Albers Equal Area with 1000m resolution,
+# 1 pixel = 1 km^2. Therefore, pixel count directly equals area in km^2.
+plot_data <- freq(folk_classes) 
+plot_data$id<-c(1,2,3,4)
+plot_data<-plot_data %>%
+  # Merge the names and hex colors based on the raster values
+  left_join(folk_colors_df, by = c('id'="value"))
+
+
+
+# 8. Create the ggplot ----
+
+ggplot(plot_data, aes(x = value, y = count/sum(count) , fill = value, color = value)) +
+  geom_col()+
+  coord_flip()+
+  # Apply our exact cartographic colors
+  scale_fill_manual(values = plot_data$color) +
+  scale_color_manual(values = plot_data$color)+
+  
+  # Add labels and titles
+  labs(
+    title = "Substrate Type",
+    y = NULL,
+    x=NULL) +
+  scale_y_continuous(labels = percent_format(accuracy = 1),
+                     limits = c(0,1)) +
+  
+  # Apply a clean, professional theme
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none", # Hide legend since X-axis already has the names
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    panel.grid.major.y = element_blank(), # Remove vertical grid lines for a cleaner look
+    panel.grid.major.x = element_blank()
+  )
+ggsave('figures/l0_plot_area_sediment.jpg',width = 20, height = 12, dpi=150, units = 'cm', bg = "white")

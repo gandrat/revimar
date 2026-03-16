@@ -2,7 +2,7 @@
 
 # 1. Loading Packages and Data ----
 
-packages<-c('terra','sf','dplyr')
+packages<-c('terra','sf','dplyr','ggplot2','scales')
 
 package.check <- lapply(packages, FUN = function(x) {
   if (!require(x, character.only = TRUE)) {
@@ -81,7 +81,7 @@ not_shelf<-ifel(is.na(shelf_clean),1,NA)
 not_shelf<-mask(not_shelf,mask)
 plot(not_shelf)
 
-# writeRaster(shelf_clean,'output_data/shelf.tif')
+writeRaster(shelf_clean,'output_data/l0_shelf.tif')
 
 ## 4.2 Slope ----
 
@@ -115,7 +115,7 @@ slope_vect <- as.polygons(slope_clean, dissolve = TRUE)
 slope_sf <- st_as_sf(slope_vect)
 plot(slope_sf)
 
-write_sf(slope_sf,'output_data/slope2000.shp')
+write_sf(slope_sf,'input_data/l0_slope2000.shp')
 
 ### 4.2.3. Manual editing slope polygon ----
 #Slope polygon splited on QGIS to remove Vitoria-Trindade mountains from slope
@@ -152,7 +152,7 @@ geomorphology<-cover(seamounts_rast,geomorphology)
 
 
 # 6. Exporting Figure ----
-geomorphology<-rast('output_data/benthic_geomorphology.tif')
+geomorphology<-rast('output_data/l1_benthic_provinces.tif')
 geomorphology<-as.factor(geomorphology)
 
 color_table_geo <- data.frame(
@@ -182,8 +182,6 @@ habitat_table <- data.frame(
 levels(geomorphology) <- habitat_table
 
 
-geomorphology<-rast('output_data/benthic_geomorphology_v2.tif')
-
 jpeg(filename = "figures/l1_map_geomorphology.jpg", 
      width = 40,       # Width of the image
      height = 50,       # Height of the image
@@ -197,6 +195,46 @@ dev.off()
 
 # 7. Exporting data ----
 writeRaster(geomorphology, 
-            'output_data/benthic_geomorphology_v3.tif',
+            'output_data/l1_benthic_geomorphology_v3.tif',
             datatype = "INT2U",
             overwrite = TRUE)
+
+
+# 8.1. Calculate Area ----
+# Because the raster is in Albers Equal Area with 1000m resolution,
+# 1 pixel = 1 km^2. Therefore, pixel count directly equals area in km^2.
+plot_data <- freq(geomorphology)
+plot_data$id<-c(1,2,3,4)
+
+plot_data<-plot_data %>%
+  left_join(habitat_table, by = c("value" = "Habitat_Zone")) %>%
+  # Merge the exact hex colors used in the map
+  left_join(color_table_geo, by = c('id'="value")) 
+
+
+## 8.2. Create the ggplot ----
+
+ggplot(plot_data, aes(x = value, y = count/sum(count) , fill = value, color = value)) +
+  geom_bar(stat = "identity") +
+  coord_flip()+
+  # Apply our exact cartographic colors
+  scale_fill_manual(values = plot_data$color) +
+  scale_color_manual(values = plot_data$color)+
+  
+  # Add labels and titles
+  labs(
+    title = "Provinces (L1)",
+    y = NULL,
+    x=NULL) +
+  scale_y_continuous(labels = percent_format(accuracy = 1),
+                     limits = c(0,1)) +
+  
+  # Apply a clean, professional theme
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none", # Hide legend since X-axis already has the names
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    panel.grid.major.y = element_blank(), # Remove vertical grid lines for a cleaner look
+    panel.grid.major.x = element_blank()
+  )
+ggsave('figures/l1_plot_area.jpg',width = 20, height = 12, dpi=150, units = 'cm', bg = "white")

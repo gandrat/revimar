@@ -13,7 +13,7 @@ package.check <- lapply(packages, FUN = function(x) {
 })
 
 # Load the base Albers rasters (Geomorphology and Bathymetry)
-geomorphology <- rast('output_data/benthic_geomorphology.tif')
+geomorphology <- rast('output_data/l1_benthic_geomorphology_v3.tif')
 bat <- rast('input_data/batimetria_dhn_albers.tif')
 
 # Load the Copernicus CMEMS Euphotic Depth (Zeu) NetCDF file.
@@ -40,6 +40,7 @@ zeu_med <- mask(zeu_med, geomorphology)
 
 writeRaster(zeu_med,'input_data/zeu_cmems_2024.tif',overwrite=T)
 
+zeu_med<-rast('input_data/zeu_cmems_2024.tif')
 plot(zeu_med, main = "Median Euphotic Depth (m)")
 
 
@@ -50,8 +51,9 @@ plot(zeu_med, main = "Median Euphotic Depth (m)")
 # We multiply 'bat' by -1 to turn negative depths (e.g., -40m) into positive values (40m) 
 # so they can be directly compared to the positive Zeu values.
 zeu_bat <- zeu_med >= (bat * -1)
-
-plot(zeu_bat, main = "Euphotic Benthos (1 = Light Reaches Bottom)")
+plot(bat * -1)
+plot(zeu_med)
+plot(zeu_bat, main = "Light Reaches Bottom)")
 
 writeRaster(zeu_bat,'output_data/l0_euphotic_zone.tif',overwrite=T)
 
@@ -154,7 +156,7 @@ coltab(geom_photic) <- color_table
 
 # Visualization
 geom_photic<-rast('output_data/geomorphology_photic_zones_v2.tif')
-
+plot(geom_photic)
 jpeg(filename = "figures/l2_map_geomorphology_photic.jpg", 
      width = 40,       # Width of the image
      height = 50,       # Height of the image
@@ -233,8 +235,9 @@ ggplot(plot_data, aes(x = Habitat_Zone, y = count / sum(count), fill = Habitat_Z
     panel.grid.major.y = element_blank(), # Remove vertical grid lines for a cleaner look
     panel.grid.major.x = element_blank()
   )
-ggsave('figures/l2_plot_area.jpg',width = 20, height = 12, dpi=150, units = 'cm')
+ggsave('figures/l2_plot_area.jpg',width = 20, height = 12, dpi=150, units = 'cm',bg='white')
 
+plot(bat, main = "Depth (m)",)
 
 # 8. Export data ----
 # Export the final combined raster
