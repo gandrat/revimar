@@ -170,7 +170,7 @@ write.csv(updated_rat, 'output_data/l3_benthic_habitats_legend.csv', row.names =
 
 
 
-# 6. Safe Exporting (8-bit GeoTIFF with Embedded Color Table) ----
+# 7. Safe Exporting (8-bit GeoTIFF with Embedded Color Table) ----
 
 # Step A: Convert the factor raster back to raw numbers (stripping the categorical metadata)
 hab_numeric <- as.numeric(habitats)
