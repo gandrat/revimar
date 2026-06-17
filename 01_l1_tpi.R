@@ -15,8 +15,11 @@ crs_albers_brasil <- "+proj=aea +lat_0=-12 +lon_0=-54 +lat_1=-2 +lat_2=-22 +x_0=
 
 bat<-rast('input_data/gebco/gebco_2026_n10.0_s-38.0_w-55.0_e-24.0_geotiff.tif')
 bat<-project(bat,crs_albers_brasil,method='bilinear')
+writeRaster(bat,'output_data/bathymetry_gebco.tif')
+
 ss<-read_sf('input_data/study_area.shp')
 ss<-st_transform(ss,crs_albers_brasil)
+
 
 res(bat)
 plot(bat)
