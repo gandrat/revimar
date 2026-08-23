@@ -42,6 +42,7 @@ bpi_51 <- tpi(bat, scale = 51, win = "rectangle", normalize = TRUE)
 bpi_501<-tpi(bat, scale = 501, win = "rectangle", normalize = TRUE)
 bpi_101 <- tpi(bat, scale = 101, win = "rectangle", normalize = TRUE)
 
+
 bpi<-c(bpi_9,bpi_21, bpi_51, bpi_101,bpi_501)
 names(bpi)<-c('s9','s21','s51','s101','s501')
 
@@ -72,8 +73,10 @@ plot(can)
 can<-mask(can,ss)
 writeRaster(can,'output_data/l1_tpi_low.tif',overwrite=T)
 
-##Hight TPI (Mountains)
-mount<-bpi$s501>=.5
+##Hight TPI (Mountains)--------------
+bpi<-mask(bpi,ss)
+
+mount<-bpi$s101>=.7
 
 plot(mount)
 

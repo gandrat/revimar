@@ -158,5 +158,5 @@ benthic_zones_m<-mask(benthic_zones_m,ss)
 plot(benthic_zones_m)
 
 # 7. Export the final classified product
-writeRaster(benthic_zones_m, "output_data/l1_benthic_provinces_v2.tif", overwrite = TRUE)
+writeRaster(benthic_zones_m, "output_data/l1_benthic_provinces_v1.tif", overwrite = TRUE)
 

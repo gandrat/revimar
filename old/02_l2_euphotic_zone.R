@@ -79,110 +79,116 @@ plot(zeu_bat, main = "Light Reaches Bottom)")
 
 writeRaster(zeu_bat,'output_data/l0_euphotic_zone.tif',overwrite=T)
 
-# 5. Overlapping with Geomorphology (Habitat Zones) ----
+
+# Bathyal/Abyssal
+plot(bat)
+aby<-bat<=-2000
+plot(aby)
+
+
+# 5. Overlapping with Provinces (Habitat Zones) ----
 # First, convert the TRUE/FALSE boolean raster into numeric 1 (Euphotic) and 0 (Aphotic)
 zeu_bat_num <- ifel(zeu_bat, 1, 0)
 plot(zeu_bat_num)
 
+
+
+
 ## 5.1 Map Algebra ----
 # Combine the rasters to create unique two-digit IDs.
-# Geomorphology (1 to 4) * 10 + Photic (0 or 1)
-# Example: Shelf (1) * 10 + Euphotic (1) = 11 (Euphotic Shelf)
+# Geomorphology L1 (1 to 5) * 10 + Photic Zone (0 or 1)
+# 1=Shelf, 2=Slope, 3=Rise, 4=Basin, 5=Seamount
 geom_photic <- (l1 * 10) + zeu_bat_num
-plot(geom_photic)
+plot(geom_photic, main = "Raw Two-Digit Combinations")
 
-
-# 6. Reclassification Matrix ----
+## 6. Reclassification Matrix ----
 # We create a 2-column matrix: [Old Value, New Value].
-# We force all Slope pixels (20, 21) to become 20.
-# We force all Basin pixels (30, 31) to become 30.
-# Shelf (10, 11) and Seamounts (40, 41) remain unchanged.
-
+# We force Slope (21), Rise (31), and Basin (41) to drop the euphotic distinction, 
+# as these morphological features occur below the photic zone.
 reclass_matrix <- matrix(c(
   10, 10,  # Aphotic Shelf    -> Aphotic Shelf
   11, 11,  # Euphotic Shelf   -> Euphotic Shelf
   20, 20,  # Aphotic Slope    -> Continental Slope
   21, 20,  # Euphotic Slope   -> Continental Slope (Removing photic distinction)
-  31, 30,  # Euphotic Slope   -> Continental Rise 
-  31, 30,  # Euphotic Slope   -> Continental Rise (Removing photic distinction)
+  30, 30,  # Aphotic Rise     -> Continental Rise
+  31, 30,  # Euphotic Rise    -> Continental Rise (Removing photic distinction)
   40, 40,  # Aphotic Basin    -> Oceanic Basin
   41, 40,  # Euphotic Basin   -> Oceanic Basin (Removing photic distinction)
   50, 50,  # Aphotic Seamount -> Aphotic Seamount
   51, 51   # Euphotic Seamount-> Euphotic Seamount
 ), ncol = 2, byrow = TRUE)
 
-# Apply the reclassification
+# Apply the initial reclassification
 geom_photic <- classify(geom_photic, reclass_matrix)
-plot(geom_photic)
 
-# 3. Isolating Abyssal Seamounts (Depth < -200m) ----
+## 6.1 Isolating Deep Seamounts (Depth < -200m) ----
+# Creates a 3rd Seamount class for isolated peaks in deep bathyal/abyssal waters
 geom_photic <- ifel(geom_photic %in% c(50, 51) & bat < -200, 52, geom_photic)
 
-
-
+## 7. Sequential ID Reclassification Matrix ----
+# Map the two-digit logical IDs to a sequential 1 to 8 ID for the final legend
 alpha_matrix <- matrix(c(
   11, 1,   # 1 = A1. Euphotic Shelf
   10, 2,   # 2 = A2. Mesophotic Shelf
-  20, 3,   # 3 = B3. Bathial Continental Slope
-  30, 4,   # 4 = C4. Oceanic Basin
-  41, 5,   # 5 = D1. Euphotic Seamount
-  40, 6,   # 6 = D2. Mesophotic Seamount
-  42, 7    # 7 = D3. Bathial Seamount
+  20, 3,   # 3 = B3. Bathyal Continental Slope
+  30, 4,   # 4 = C4. Continental Rise
+  40, 5,   # 5 = C5. Oceanic Basin
+  51, 6,   # 6 = D1. Euphotic Seamount
+  50, 7,   # 7 = D2. Mesophotic Seamount
+  52, 8    # 8 = D3. Bathyal Seamount
 ), ncol = 2, byrow = TRUE)
 
 geom_photic_id <- classify(geom_photic, alpha_matrix)
-plot(geom_photic_id)
 
-# Convert to categorical raster
+## 8. Raster Attribute Table (RAT) ----
+# Convert the raster to a categorical factor
 geom_photic_id <- as.factor(geom_photic_id)
 
-# Create the Raster Attribute Table (RAT) for the combined habitats
-# Note: Euphotic Basin (31) is highly unlikely due to depth, but included for mathematical completeness.
-# Create the new, simplified Raster Attribute Table (RAT)
+# Create the Raster Attribute Table for the combined habitats
 habitat_table <- data.frame(
-  ID = 1:7,
+  ID = 1:8,
   Habitat_Zone = c(
     "A1. Euphotic Shelf",
     "A2. Mesophotic Shelf",
-    "B3. Bathial Slope",
-    "C4. Oceanic Basin",
+    "B3. Bathyal Continental Slope",
+    "C4. Continental Rise",
+    "C5. Oceanic Basin",
     "D1. Euphotic Seamount",
     "D2. Mesophotic Seamount",
-    "D3. Bathial Seamount"
+    "D3. Bathyal Seamount"
   )
 )
 
-# Apply the exact names to the new raster levels
-geom_photic<-geom_photic_id
-levels(geom_photic) <- habitat_table
-plot(geom_photic)
-## 6.1. Defining the Color Palette ----
-# We map the exact colors to the specific IDs in the raster.
-# ID 10 = Aphotic Shelf, 11 = Euphotic Shelf
-# ID 20 = Continental Slope, 30 = Oceanic Basin
-# ID 40 = Aphotic Seamount, 41 = Euphotic Seamount
+# Apply the exact names to the raster levels
+levels(geom_photic_id) <- habitat_table
 
-# We create a data.frame where column 1 is the pixel ID and column 2 is the color (Hex or R name)
+## 9. Defining the Color Palette ----
+# We map the exact colors to the specific IDs (1 to 8) in the categorical raster.
 color_table <- data.frame(
-  value = 1:7,
+  value = 1:8,
   color = c(
     "#00FFFF",  # 1: A1. Euphotic Shelf (Cyan)
     "#00688B",  # 2: A2. Mesophotic Shelf (Deep Sky Blue 4)
-    "#FFA500",  # 3: B3. Bathial Continental Slope (Orange)
-    "#000050",  # 4: C4. Oceanic Basin (Navy)
-    "#FF4500",  # 5: D1. Euphotic Seamount (Orange Red)
-    "#8B0000",  # 6: D2. Mesophotic Seamount (Dark Red)
-    "#4A4000"   # 7: D3. Bathial Seamount (Indigo)
+    "#FFA500",  # 3: B3. Bathyal Continental Slope (Orange)
+    "#FFD700",  # 4: C4. Continental Rise (Gold - representing transitional sediment)
+    "#000050",  # 5: C5. Oceanic Basin (Navy)
+    "#FF4500",  # 6: D1. Euphotic Seamount (Orange Red)
+    "#8B0000",  # 7: D2. Mesophotic Seamount (Dark Red)
+    "#4A4000"   # 8: D3. Bathyal Seamount (Indigo/Dark Brown)
   )
 )
 
-coltab(geom_photic) <- color_table
+coltab(geom_photic_id) <- color_table
 
+# Final visual check
+plot(geom_photic_id, main = "Benthic Habitats of the Brazilian Margin")
 
-# Visualization
-geom_photic<-rast('output_data/geomorphology_photic_zones_v2.tif')
+writeRaster(geom_photic, 'output_data/l2_province_photic_zones.tif')
+
+# Visualization----------
+geom_photic<-rast('output_data/l2_province_photic_zones.tif')
 plot(geom_photic)
-jpeg(filename = "figures/l2_map_geomorphology_photic.jpg", 
+jpeg(filename = "figures/l2_map_geomorphology_photic_v2.jpg", 
      width = 40,       # Width of the image
      height = 50,       # Height of the image
      units = "cm",     # Units for width/height (inches)
@@ -203,25 +209,28 @@ print(photic_summary)
 
 ## 7.1. Plot areas ----
 # Create a reference table with our exact names and colors
+# Create a reference table with our exact names and colors
 habitat_reference <- data.frame(
-  value = 1:7,
+  value = 1:8,
   Habitat_Zone = c(
     "A1. Euphotic Shelf",
     "A2. Mesophotic Shelf",
-    "B3. Bathial Slope",
-    "C4. Oceanic Basin",
+    "B3. Bathyal Continental Slope",
+    "C4. Continental Rise",
+    "C5. Oceanic Basin",
     "D1. Euphotic Seamount",
     "D2. Mesophotic Seamount",
-    "D3. Bathial Seamount"
+    "D3. Bathyal Seamount"
   ),
   color = c(
     "#00FFFF",  # 1: A1. Euphotic Shelf (Cyan)
     "#00688B",  # 2: A2. Mesophotic Shelf (Deep Sky Blue 4)
-    "#FFA500",  # 3: B3. Bathial Continental Slope (Orange)
-    "#000050",  # 4: C4. Oceanic Basin (Navy)
-    "#FF4500",  # 5: D1. Euphotic Seamount (Orange Red)
-    "#8B0000",  # 6: D2. Mesophotic Seamount (Dark Red)
-    "#4A4000"   # 7: D3. Bathial Seamount (Indigo)
+    "#FFA500",  # 3: B3. Bathyal Continental Slope (Orange)
+    "#FFD700",  # 4: C4. Continental Rise (Gold)
+    "#000050",  # 5: C5. Oceanic Basin (Navy)
+    "#FF4500",  # 6: D1. Euphotic Seamount (Orange Red)
+    "#8B0000",  # 7: D2. Mesophotic Seamount (Dark Red)
+    "#4A4000"   # 8: D3. Bathyal Seamount (Indigo)
   )
 )
 
@@ -260,18 +269,18 @@ ggplot(plot_data, aes(x = Habitat_Zone, y = count / sum(count), fill = Habitat_Z
     panel.grid.major.y = element_blank(), # Remove vertical grid lines for a cleaner look
     panel.grid.major.x = element_blank()
   )
-ggsave('figures/l2_plot_area.jpg',width = 20, height = 12, dpi=150, units = 'cm',bg='white')
+ggsave('figures/l2_plot_area_v2.jpg',width = 20, height = 12, dpi=150, units = 'cm',bg='white')
 
-plot(bat, main = "Depth (m)",)
+
 
 # 8. Export data ----
 # Export the final combined raster
-writeRaster(geom_photic, 
-            'output_data/l2_geomorphology_photic_zones_v2.tif', 
-            datatype = "INT2U",
+writeRaster(geom_photic_id, 
+            'output_data/l2_province_photic_zones.tif', 
+            datatype = "INT1U",
             overwrite = TRUE)
 
 # Export the summary table as a CSV for your technical report
-write.csv(photic_summary, 'output_data/habitat_area_summary.csv', row.names = FALSE)
+write.csv(photic_summary, 'output_data/habitat_area_summary_v2.csv', row.names = FALSE)
 
 
