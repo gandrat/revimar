@@ -1,0 +1,1089 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   contentStyleType="text/css"
+   height="726px"
+   preserveAspectRatio="none"
+   style="width:2046px;height:726px;background:#FFFFFF;"
+   version="1.1"
+   viewBox="0 0 2046 726"
+   width="2046px"
+   zoomAndPan="magnify"
+   id="svg273"
+   sodipodi:docname="revimar_fluxo.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview275"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="0.6402737"
+     inkscape:cx="1023"
+     inkscape:cy="363.12595"
+     inkscape:window-width="1868"
+     inkscape:window-height="1011"
+     inkscape:window-x="1680"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg273" />
+  <defs
+     id="defs2" />
+  <g
+     id="cluster_Nível 1 (L1) - Geomorfologia">
+    <path
+       d="m 692.5,170.0679 h 195 a 3.75,3.75 0 0 1 2.5,2.5 l 7,22.5679 h 468.5 a 2.5,2.5 0 0 1 2.5,2.5 v 81.9321 a 2.5,2.5 0 0 1 -2.5,2.5 h -673 a 2.5,2.5 0 0 1 -2.5,-2.5 v -107 a 2.5,2.5 0 0 1 2.5,-2.5"
+       fill="none"
+       style="stroke:#000000;stroke-width:1.5"
+       id="path6" />
+    <line
+       style="stroke:#000000;stroke-width:1.5"
+       x1="690"
+       x2="897"
+       y1="195.1358"
+       y2="195.1358"
+       id="line8" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       font-weight="bold"
+       lengthAdjust="spacing"
+       textLength="194"
+       x="694"
+       y="187.03391"
+       id="text10">Nível 1 (L1) - Geomorfologia</text>
+  </g>
+  <g
+     id="cluster_Nível 2 (L2) - Estratificação Fótica e Batimétrica">
+    <path
+       d="m 8.5,333.0679 h 326 a 3.75,3.75 0 0 1 2.5,2.5 l 7,22.5679 h 1692.5 a 2.5,2.5 0 0 1 2.5,2.5 v 62.9321 a 2.5,2.5 0 0 1 -2.5,2.5 H 8.5 a 2.5,2.5 0 0 1 -2.5,-2.5 v -88 a 2.5,2.5 0 0 1 2.5,-2.5"
+       fill="none"
+       style="stroke:#000000;stroke-width:1.5"
+       id="path13" />
+    <line
+       style="stroke:#000000;stroke-width:1.5"
+       x1="6"
+       x2="344"
+       y1="358.1358"
+       y2="358.1358"
+       id="line15" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       font-weight="bold"
+       lengthAdjust="spacing"
+       textLength="325"
+       x="10"
+       y="350.03391"
+       id="text17">Nível 2 (L2) - Estratificação Fótica e Batimétrica</text>
+  </g>
+  <g
+     id="cluster_Nível 3 (L3) - Substrato / Sedimento">
+    <path
+       d="m 108.5,477.0679 h 248 a 3.75,3.75 0 0 1 2.5,2.5 l 7,22.5679 h 0.5 a 2.5,2.5 0 0 1 2.5,2.5 v 119.9321 a 2.5,2.5 0 0 1 -2.5,2.5 h -258 a 2.5,2.5 0 0 1 -2.5,-2.5 v -145 a 2.5,2.5 0 0 1 2.5,-2.5"
+       fill="none"
+       style="stroke:#000000;stroke-width:1.5"
+       id="path20" />
+    <line
+       style="stroke:#000000;stroke-width:1.5"
+       x1="106"
+       x2="366"
+       y1="502.1358"
+       y2="502.1358"
+       id="line22" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       font-weight="bold"
+       lengthAdjust="spacing"
+       textLength="247"
+       x="110"
+       y="494.03391"
+       id="text24">Nível 3 (L3) - Substrato / Sedimento</text>
+  </g>
+  <g
+     id="elem_L1_Shelf">
+    <rect
+       fill="#f1f1f1"
+       height="58.135799"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="109"
+       x="706.5"
+       y="208.0679"
+       id="rect27" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="89"
+       x="716.5"
+       y="233.03391"
+       id="text29">1. Plataforma</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="42"
+       x="716.5"
+       y="252.10181"
+       id="text31">(Shelf)</text>
+  </g>
+  <g
+     id="elem_L1_Slope">
+    <rect
+       fill="#f1f1f1"
+       height="58.135799"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="82"
+       x="851"
+       y="208.0679"
+       id="rect34" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="62"
+       x="861"
+       y="233.03391"
+       id="text36">2. Talude</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="45"
+       x="861"
+       y="252.10181"
+       id="text38">(Slope)</text>
+  </g>
+  <g
+     id="elem_L1_Rise">
+    <rect
+       fill="#f1f1f1"
+       height="58.135799"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="69"
+       x="968.5"
+       y="208.0679"
+       id="rect41" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="49"
+       x="978.5"
+       y="233.03391"
+       id="text43">3. Sopé</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="36"
+       x="978.5"
+       y="252.10181"
+       id="text45">(Rise)</text>
+  </g>
+  <g
+     id="elem_L1_Basin">
+    <rect
+       fill="#f1f1f1"
+       height="58.135799"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="72"
+       x="1073"
+       y="208.0679"
+       id="rect48" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="52"
+       x="1083"
+       y="233.03391"
+       id="text50">4. Bacia</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="45"
+       x="1083"
+       y="252.10181"
+       id="text52">(Basin)</text>
+  </g>
+  <g
+     id="elem_L1_Seamounts">
+    <rect
+       fill="#f1f1f1"
+       height="58.135799"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="171"
+       x="1180.5"
+       y="208.0679"
+       id="rect55" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="151"
+       x="1190.5"
+       y="233.03391"
+       id="text57">5. Montes Submarinos</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="83"
+       x="1190.5"
+       y="252.10181"
+       id="text59">(Seamounts)</text>
+  </g>
+  <g
+     id="elem_L2_A1">
+    <rect
+       fill="#00ffff"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="176"
+       x="22"
+       y="371.0679"
+       id="rect62" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="156"
+       x="32"
+       y="396.03391"
+       id="text64">A1. Plataforma Eufótica</text>
+  </g>
+  <g
+     id="elem_L2_A2">
+    <rect
+       fill="#00688b"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="195"
+       x="232.5"
+       y="371.0679"
+       id="rect67" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="175"
+       x="242.5"
+       y="396.03391"
+       id="text69">A2. Plataforma Mesofótica</text>
+  </g>
+  <g
+     id="elem_L2_B3">
+    <rect
+       fill="#ffa500"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="133"
+       x="462.5"
+       y="371.0679"
+       id="rect72" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="113"
+       x="472.5"
+       y="396.03391"
+       id="text74">B3. Talude Batial</text>
+  </g>
+  <g
+     id="elem_L2_B4">
+    <rect
+       fill="#ff8c00"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="143"
+       x="630.5"
+       y="371.0679"
+       id="rect77" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="123"
+       x="640.5"
+       y="396.03391"
+       id="text79">B4. Talude Abissal</text>
+  </g>
+  <g
+     id="elem_L2_C5">
+    <rect
+       fill="#ffd700"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="120"
+       x="809"
+       y="371.0679"
+       id="rect82" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="100"
+       x="819"
+       y="396.03391"
+       id="text84">C5. Sopé Batial</text>
+  </g>
+  <g
+     id="elem_L2_C6">
+    <rect
+       fill="#b8860b"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="130"
+       x="964"
+       y="371.0679"
+       id="rect87" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="110"
+       x="974"
+       y="396.03391"
+       id="text89">C6. Sopé Abissal</text>
+  </g>
+  <g
+     id="elem_L2_C7">
+    <rect
+       fill="#4169e1"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="123"
+       x="1129.5"
+       y="371.0679"
+       id="rect92" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="103"
+       x="1139.5"
+       y="396.03391"
+       id="text94">C7. Bacia Batial</text>
+  </g>
+  <g
+     id="elem_L2_C8">
+    <rect
+       fill="#000050"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="133"
+       x="1287.5"
+       y="371.0679"
+       id="rect97" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="113"
+       x="1297.5"
+       y="396.03391"
+       id="text99">C8. Bacia Abissal</text>
+  </g>
+  <g
+     id="elem_L2_D1">
+    <rect
+       fill="#ff4500"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="147"
+       x="1455.5"
+       y="371.0679"
+       id="rect102" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="127"
+       x="1465.5"
+       y="396.03391"
+       id="text104">D1. Monte Eufótico</text>
+  </g>
+  <g
+     id="elem_L2_D2">
+    <rect
+       fill="#8b0000"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="166"
+       x="1638"
+       y="371.0679"
+       id="rect107" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="146"
+       x="1648"
+       y="396.03391"
+       id="text109">D2. Monte Mesofótico</text>
+  </g>
+  <g
+     id="elem_L2_D3">
+    <rect
+       fill="#4a4000"
+       height="39.067902"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="184"
+       x="1839"
+       y="371.0679"
+       id="rect112" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="164"
+       x="1849"
+       y="396.03391"
+       id="text114">D3. Monte Batial/Abissal</text>
+  </g>
+  <g
+     id="elem_Sedimentos">
+    <rect
+       fill="#f8f8ff"
+       height="96.271698"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="103"
+       x="166.5"
+       y="515.06787"
+       id="rect117" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="52"
+       x="176.5"
+       y="540.03387"
+       id="text119">a. Lama</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="52"
+       x="176.5"
+       y="559.10181"
+       id="text121">b. Areia</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="75"
+       x="176.5"
+       y="578.16968"
+       id="text123">c. Cascalho</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="83"
+       x="176.5"
+       y="597.23761"
+       id="text125">d. Biogênico</text>
+  </g>
+  <g
+     id="elem_Fundo">
+    <rect
+       fill="#e6f3ff"
+       height="58.135799"
+       rx="2.5"
+       ry="2.5"
+       style="stroke:#181818;stroke-width:0.5"
+       width="201"
+       x="902.5"
+       y="47.067902"
+       id="rect128" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="181"
+       x="912.5"
+       y="72.033897"
+       id="text130">Modelo Digital de Elevação</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="14px"
+       lengthAdjust="spacing"
+       textLength="116"
+       x="912.5"
+       y="91.101799"
+       id="text132">(Batimetria + BPI)</text>
+  </g>
+  <g
+     id="elem_GMN41">
+    <path
+       d="m 77.5,674.0679 v 45.412 h 281 v -35.412 l -10,-10 H 222 l -4,-62.9 -4,62.9 H 77.5"
+       fill="#fff8dc"
+       style="stroke:#181818;stroke-width:0.5"
+       id="path135" />
+    <path
+       d="m 348.5,674.0679 v 10 h 10 l -10,-10"
+       fill="#fff8dc"
+       style="stroke:#181818;stroke-width:0.5"
+       id="path137" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="260"
+       x="83.5"
+       y="692.9649"
+       id="text139">Gera as 8 classes alfanuméricas combinadas</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="254"
+       x="83.5"
+       y="710.6709"
+       id="text141">exclusivas da plataforma (Ex: A1a, A2c, etc.)</text>
+  </g>
+  <g
+     id="elem_NotaDeep">
+    <path
+       d="m 886,540.5679 v 45.412 h 286 v -35.412 l -10,-10 H 886"
+       fill="#fff8dc"
+       style="stroke:#181818;stroke-width:0.5"
+       id="path144" />
+    <path
+       d="m 1162,540.5679 v 10 h 10 l -10,-10"
+       fill="#fff8dc"
+       style="stroke:#181818;stroke-width:1"
+       id="path146" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="230"
+       x="892"
+       y="559.4649"
+       id="text148">Classes profundas permanecem puras.</text>
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="265"
+       x="892"
+       y="577.1709"
+       id="text150">Não recebem cruzamento sedimentar no L3.</text>
+  </g>
+  <g
+     id="link_Fundo_L1_Shelf">
+    <path
+       d="m 902.48,85.5979 c -37.42,7.82 -77.74,22.42 -106.48,49.47 -20.13,18.95 -27.7422,44.1354 -31.3722,66.8254"
+       fill="none"
+       id="Fundo-to-L1_Shelf"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="764.4699,202.8807 761.152,198.299 763.68,207.8179 769.0515,199.5628 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon154" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="96"
+       x="797"
+       y="149.9649"
+       id="text156">Topografia Rasa</text>
+  </g>
+  <g
+     id="link_Fundo_L1_Slope">
+    <path
+       d="m 942.48,105.1679 c -12.03,8.1 -23.41,18.03 -31.48,29.9 -14.55,21.39 -18.4659,44.965 -19.3459,66.575"
+       fill="none"
+       id="Fundo-to-L1_Slope"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="891.6134,202.6421 887.7795,198.4826 891.41,207.6379 895.7729,198.8081 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon160" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="78"
+       x="912"
+       y="149.9649"
+       id="text162">Declive &gt; 1.2°</text>
+  </g>
+  <g
+     id="link_Fundo_L1_Rise">
+    <path
+       d="m 1001.26,105.0779 c -0.52,9.52 -1.01,20.21 -1.26,29.99 -0.63,24.55 0.024,46.4673 1.0239,66.7073"
+       fill="none"
+       id="Fundo-to-L1_Rise"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="1001.0733,202.774 996.8808,198.9763 1001.32,207.7679 1004.871,198.5815 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon166" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="78"
+       x="1001"
+       y="149.9649"
+       id="text168">Declive &lt; 1.2°</text>
+  </g>
+  <g
+     id="link_Fundo_L1_Basin">
+    <path
+       d="m 1053.78,105.0679 c 11.36,8.34 22.36,18.41 30.22,30 14.7,21.68 20.0779,45.2401 22.5779,66.7701"
+       fill="none"
+       id="Fundo-to-L1_Basin"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="1106.6933,202.8313 1102.2586,199.3194 1107.27,207.7979 1110.2052,198.3966 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon172" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="104"
+       x="1094"
+       y="149.9649"
+       id="text174">Planície Profunda</text>
+  </g>
+  <g
+     id="link_Fundo_L1_Seamounts">
+    <path
+       d="m 1103.69,89.8579 c 35.4,8.38 73.7,22.25 103.31,45.21 24.07,18.67 37.9457,44.5656 47.1657,67.4256"
+       fill="none"
+       id="Fundo-to-L1_Seamounts"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="1254.5398,203.4209 1249.3339,201.2074 1256.41,208.0579 1256.7532,198.215 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon178" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="106"
+       x="1225"
+       y="149.9649"
+       id="text180">BPI Positivo (Alto)</text>
+  </g>
+  <g
+     id="link_L1_Shelf_L2_A1">
+    <path
+       d="m 706.28,240.7979 c -116.51,6.37 -385.42,24.26 -470.28,57.27 -42.58,16.56 -79.463,47.0369 -102.603,68.6269"
+       fill="none"
+       id="L1_Shelf-to-L2_A1"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="132.6659,367.3769 132.8618,361.7235 129.01,370.7879 138.3193,367.5729 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon184" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="124"
+       x="237"
+       y="312.9649"
+       id="text186">Profundidade &lt;= Zeu</text>
+  </g>
+  <g
+     id="link_L1_Shelf_L2_A2">
+    <path
+       d="m 706.38,241.4479 c -90.35,6.47 -266.05,23.06 -317.38,56.62 -26.58,17.38 -41.4301,45.7878 -50.0501,67.0978"
+       fill="none"
+       id="L1_Shelf-to-L2_A2"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="338.5749,366.0928 336.3668,360.8847 336.7,370.7279 343.783,363.8846 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon190" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="117"
+       x="390"
+       y="312.9649"
+       id="text192">Profundidade &gt; Zeu</text>
+  </g>
+  <g
+     id="link_L1_Slope_L2_B3">
+    <path
+       d="m 867.99,266.0779 c -9.79,9.43 -21.9,18.85 -34.99,23.99 -15.93,6.26 -296.05,-4.26 -308,8 -18.53,19.02 -13.1833,46.5043 -5.8333,67.2543"
+       fill="none"
+       id="L1_Slope-to-L2_B3"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="519.5006,366.2649 514.3945,363.83 521.17,370.9779 521.9354,361.1588 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon196" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="139"
+       x="526"
+       y="312.9649"
+       id="text198">Profundidade &gt; -3500m</text>
+  </g>
+  <g
+     id="link_L1_Slope_L2_B4">
+    <path
+       d="m 867.63,266.1579 c -9.75,9.32 -21.74,18.64 -34.63,23.91 -15.45,6.31 -138.52,-4.11 -150,8 -18.53,19.54 -8.0239,47.0146 3.7561,67.5646"
+       fill="none"
+       id="L1_Slope-to-L2_B4"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="687.2534,366.5001 681.7938,365.0191 689.74,370.8379 688.7344,361.0405 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon202" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="146"
+       x="684"
+       y="312.9649"
+       id="text204">Profundidade &lt;= -3500m</text>
+  </g>
+  <g
+     id="link_L1_Rise_L2_C5">
+    <path
+       d="m 981.78,266.2379 c -8.5,9.21 -19.07,18.44 -30.78,23.83 -20.85,9.6 -87.41,-8.85 -103,8 -18.38,19.86 -7.1862,47.3006 5.1338,67.7506"
+       fill="none"
+       id="L1_Rise-to-L2_C5"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="853.6498,366.6751 848.1594,365.3129 856.23,370.9579 855.012,361.1847 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon208" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="139"
+       x="849"
+       y="312.9649"
+       id="text210">Profundidade &gt; -3500m</text>
+  </g>
+  <g
+     id="link_L1_Rise_L2_C6">
+    <path
+       d="m 998.86,266.0879 c -1.48,15.21 -2.08,34.27 1.14,50.98 3.67,19.04 9.6842,34.0254 16.5742,48.3154"
+       fill="none"
+       id="L1_Rise-to-L2_C6"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="1017.0085,366.2841 1011.6682,364.4183 1019.18,370.7879 1018.8743,360.9438 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon214" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="146"
+       x="1001"
+       y="312.9649"
+       id="text216">Profundidade &lt;= -3500m</text>
+  </g>
+  <g
+     id="link_L1_Basin_L2_C7">
+    <path
+       d="m 1131.11,266.2179 c 7.15,9.78 14.8,21.02 20.89,31.85 13.54,24.08 23.3123,48.1712 30.2923,67.0812"
+       fill="none"
+       id="L1_Basin-to-L2_C7"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="1182.6386,366.0873 1177.501,363.7199 1184.37,370.7779 1185.006,360.9496 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon220" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="139"
+       x="1161"
+       y="312.9649"
+       id="text222">Profundidade &gt; -3500m</text>
+  </g>
+  <g
+     id="link_L1_Basin_L2_C8">
+    <path
+       d="m 1130.9,266.1279 c 8.88,9.31 19.93,18.64 32.1,23.94 29.79,12.97 118.9,-9.92 146,8 24.96,16.5 35.2124,45.2456 40.2324,66.8556"
+       fill="none"
+       id="L1_Basin-to-L2_C8"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="1349.4586,365.8976 1344.6573,362.9064 1350.59,370.7679 1352.4498,361.0962 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon226" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="146"
+       x="1327"
+       y="312.9649"
+       id="text228">Profundidade &lt;= -3500m</text>
+  </g>
+  <g
+     id="link_L1_Seamounts_L2_D1">
+    <path
+       d="m 1351.59,245.5679 c 43.02,7.54 93.67,22.57 130.41,52.5 23.12,18.84 34.3635,46.2908 40.5735,67.0908"
+       fill="none"
+       id="L1_Seamounts-to-L2_D1"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="1522.8596,366.1169 1517.8825,363.4284 1524.29,370.9079 1525.5481,361.1397 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon232" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="124"
+       x="1499"
+       y="312.9649"
+       id="text234">Profundidade &lt;= Zeu</text>
+  </g>
+  <g
+     id="link_L1_Seamounts_L2_D2">
+    <path
+       d="m 1351.92,245.8879 c 92.45,9.52 232.63,27.42 280.08,52.18 33.2,17.32 57.8644,46.7735 73.1544,68.1035"
+       fill="none"
+       id="L1_Seamounts-to-L2_D2"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="1705.737,366.9841 1700.1555,366.0636 1708.65,371.0479 1706.6576,361.4027 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon238" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="187"
+       x="1658"
+       y="312.9649"
+       id="text240">Profundidade &gt; Zeu (até -200m)</text>
+  </g>
+  <g
+     id="link_L1_Seamounts_L2_D3">
+    <path
+       d="m 1351.5,238.9979 c 141.56,2.82 417.46,14.1 502.5,59.07 31.02,16.4 51.6433,45.832 64.1133,67.462"
+       fill="none"
+       id="L1_Seamounts-to-L2_D3"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="1918.6127,366.3962 1913.1495,364.9287 1921.11,370.7279 1920.0802,360.933 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon244" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="139"
+       x="1878"
+       y="312.9649"
+       id="text246">Profundidade &lt;= -200m</text>
+  </g>
+  <g
+     id="link_L2_A1_Sedimentos">
+    <path
+       d="m 115.54,410.2679 c 4.66,14.4 12.08,34.54 21.46,50.8 10.78,18.69 21.06,32.9349 34.45,49.2249"
+       fill="none"
+       id="L2_A1-to-Sedimentos"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="172.085,511.0653 166.455,510.5152 175.26,514.9279 172.6351,505.4353 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon250" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="126"
+       x="138"
+       y="456.9649"
+       id="text252">Cruzamento Textural</text>
+  </g>
+  <g
+     id="link_L2_A2_Sedimentos">
+    <path
+       d="m 317.8,410.1379 c -16.38,24.94 -42.7763,65.1149 -65.5263,99.7549"
+       fill="none"
+       id="L2_A2-to-Sedimentos"
+       style="stroke:#666666;stroke-width:2" />
+    <polygon
+       fill="#666666"
+       points="251.7248,510.7286 250.5771,505.1894 248.98,514.9079 257.264,509.581 "
+       style="stroke:#666666;stroke-width:2"
+       id="polygon256" />
+    <text
+       fill="#000000"
+       font-family="Arial"
+       font-size="13px"
+       lengthAdjust="spacing"
+       textLength="126"
+       x="295"
+       y="456.9649"
+       id="text258">Cruzamento Textural</text>
+  </g>
+  <g
+     id="link_L2_B3_NotaDeep">
+    <path
+       d="m 562.32,410.0679 c 15.18,8 33.55,17.09 50.68,24 111.95,45.16 246.17,83.8 331.28,106.48"
+       fill="none"
+       id="L2_B3-NotaDeep"
+       style="stroke:#666666;stroke-width:2;stroke-dasharray:7, 7" />
+  </g>
+  <g
+     id="link_L2_B4_NotaDeep">
+    <path
+       d="m 737.62,410.1379 c 60.99,31.81 185.13,96.53 249.92,130.31"
+       fill="none"
+       id="L2_B4-NotaDeep"
+       style="stroke:#666666;stroke-width:2;stroke-dasharray:7, 7" />
+  </g>
+  <g
+     id="link_L2_C6_NotaDeep">
+    <path
+       d="m 1029,410.1379 c 0,31.76 0,96.35 0,130.17"
+       fill="none"
+       id="L2_C6-NotaDeep"
+       style="stroke:#666666;stroke-width:2;stroke-dasharray:7, 7" />
+  </g>
+  <g
+     id="link_L2_C8_NotaDeep">
+    <path
+       d="m 1318.6,410.1379 c -60.62,31.81 -184,96.53 -248.39,130.31"
+       fill="none"
+       id="L2_C8-NotaDeep"
+       style="stroke:#666666;stroke-width:2;stroke-dasharray:7, 7" />
+  </g>
+  <g
+     id="link_L2_D3_NotaDeep">
+    <path
+       d="m 1889.51,410.1379 c -20.05,8.35 -44.68,17.71 -67.51,23.93 -223.02,60.74 -489.68,96.49 -649.97,114.14"
+       fill="none"
+       id="L2_D3-NotaDeep"
+       style="stroke:#666666;stroke-width:2;stroke-dasharray:7, 7" />
+  </g>
+</svg>

@@ -1,0 +1,85 @@
+@startuml
+skinparam defaultFontName Arial
+skinparam node {
+  BackgroundColor White
+  BorderColor #333333
+  RoundCorner 10
+}
+skinparam arrow {
+  Color #666666
+  Thickness 2
+}
+skinparam noteBackgroundColor #FFF8DC
+
+title Chave de Classificação Bentônica REVIMAR (L1 ao L3)
+
+rectangle "Modelo Digital de Elevação\n(Batimetria + BPI)" as Fundo #E6F3FF
+
+package "Nível 1 (L1) - Geomorfologia" {
+  rectangle "1. Plataforma\n(Shelf)" as L1_Shelf
+  rectangle "2. Talude\n(Slope)" as L1_Slope
+  rectangle "3. Sopé\n(Rise)" as L1_Rise
+  rectangle "4. Bacia\n(Basin)" as L1_Basin
+  rectangle "5. Montes Submarinos\n(Seamounts)" as L1_Seamounts
+}
+
+Fundo --> L1_Shelf : Topografia Rasa
+Fundo --> L1_Slope : Declive > 0.5°
+Fundo --> L1_Rise : Declive < 0.5°
+Fundo --> L1_Basin : Planície Profunda
+Fundo --> L1_Seamounts : BPI Positivo (Alto)
+
+package "Nível 2 (L2) - Estratificação Fótica e Batimétrica" {
+  rectangle "A1. Plataforma Eufótica" as L2_A1 #00FFFF
+  rectangle "A2. Plataforma Mesofótica" as L2_A2 #00688B
+
+  rectangle "B3. Talude Batial" as L2_B3 #FFA500
+  rectangle "B4. Talude Abissal" as L2_B4 #FF8C00
+
+  rectangle "C5. Sopé Batial" as L2_C5 #FFD700
+  rectangle "C6. Sopé Abissal" as L2_C6 #B8860B
+
+  rectangle "C7. Bacia Batial" as L2_C7 #4169E1
+  rectangle "C8. Bacia Abissal" as L2_C8 #000050
+
+  rectangle "D1. Monte Eufótico" as L2_D1 #FF4500
+  rectangle "D2. Monte Mesofótico" as L2_D2 #8B0000
+  rectangle "D3. Monte Batial/Abissal" as L2_D3 #4A4000
+}
+
+L1_Shelf --> L2_A1 : Profundidade <= Zeu
+L1_Shelf --> L2_A2 : Profundidade > Zeu
+
+L1_Slope --> L2_B3 : Profundidade > -3500m
+L1_Slope --> L2_B4 : Profundidade <= -3500m
+
+L1_Rise --> L2_C5 : Profundidade > -3500m
+L1_Rise --> L2_C6 : Profundidade <= -3500m
+
+L1_Basin --> L2_C7 : Profundidade > -3500m
+L1_Basin --> L2_C8 : Profundidade <= -3500m
+
+L1_Seamounts --> L2_D1 : Profundidade <= Zeu
+L1_Seamounts --> L2_D2 : Profundidade > Zeu (até -200m)
+L1_Seamounts --> L2_D3 : Profundidade <= -200m
+
+package "Nível 3 (L3) - Substrato / Sedimento" {
+  rectangle "a. Lama\nb. Areia\nc. Cascalho\nd. Biogênico" as Sedimentos #F8F8FF
+}
+
+L2_A1 --> Sedimentos : Cruzamento Textural
+L2_A2 --> Sedimentos : Cruzamento Textural
+
+note bottom of Sedimentos
+  Gera as 8 classes alfanuméricas combinadas
+  exclusivas da plataforma (Ex: A1a, A2c, etc.)
+end note
+
+note "Classes profundas permanecem puras.\nNão recebem cruzamento sedimentar no L3." as NotaDeep
+L2_B3 .. NotaDeep
+L2_B4 .. NotaDeep
+L2_C6 .. NotaDeep
+L2_C8 .. NotaDeep
+L2_D3 .. NotaDeep
+
+@enduml
