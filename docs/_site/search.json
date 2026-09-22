@@ -1,0 +1,44 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "REVIMAR-MAP: Benthic Marine Habitats Mapping",
+    "section": "",
+    "text": "The REVIMAR-MAP project aims to provide a cartographic and methodological baseline for the predictive classification of benthic marine habitats on the Brazilian continental margin. This open-science workflow generates wall-to-wall spatial models to support Marine Spatial Planning (MSP) and environmental assessments, aligning with the guidelines of the Ministry of Environment and Climate Change (MMA) and actions funded by FUNBIO."
+  },
+  {
+    "objectID": "index.html#project-overview",
+    "href": "index.html#project-overview",
+    "title": "REVIMAR-MAP: Benthic Marine Habitats Mapping",
+    "section": "",
+    "text": "The REVIMAR-MAP project aims to provide a cartographic and methodological baseline for the predictive classification of benthic marine habitats on the Brazilian continental margin. This open-science workflow generates wall-to-wall spatial models to support Marine Spatial Planning (MSP) and environmental assessments, aligning with the guidelines of the Ministry of Environment and Climate Change (MMA) and actions funded by FUNBIO."
+  },
+  {
+    "objectID": "index.html#environment-setup",
+    "href": "index.html#environment-setup",
+    "title": "REVIMAR-MAP: Benthic Marine Habitats Mapping",
+    "section": "2. Environment Setup",
+    "text": "2. Environment Setup\nLoad the required geospatial modeling and metadata management libraries.\n\nlibrary(terra)\nlibrary(zen4R)\nlibrary(dplyr)"
+  },
+  {
+    "objectID": "index.html#geospatial-processing-pipeline",
+    "href": "index.html#geospatial-processing-pipeline",
+    "title": "REVIMAR-MAP: Benthic Marine Habitats Mapping",
+    "section": "3. Geospatial Processing Pipeline",
+    "text": "3. Geospatial Processing Pipeline\nThe methodology adopts a multiscalar top-down approach. We use physical variables such as geomorphology, photic zones, and sedimentology as proxies for biodiversity distribution.\n\n3.1. Bathymetric Smoothing\nRaw bathymetric data (e.g., GEBCO) is smoothed using a 7x7 focal mean filter to remove high-frequency noise and local artifacts before deriving morphometric variables.\n\n# Load raw bathymetry raster\nbathy_raw &lt;- rast(\"input_data/gebco_raw.tif\")\n\n# Define a 7x7 weight matrix for the focal mean\nfocal_weights &lt;- matrix(1, nrow = 7, ncol = 7)\n\n# Apply the focal filter\nbathy_smoothed &lt;- focal(bathy_raw, w = focal_weights, fun = mean, na.rm = TRUE)\n\n\n\n3.2. Slope and Macro-relief Compartmentation\nStrict slope thresholds partition the macro relief, establishing boundaries between distinct geomorphological zones. For instance, separating the Continental Rise (0.1° to 1.2°) from the Abyssal Plains (&lt; 0.1°).\n\n# Calculate slope in degrees\nslope_deg &lt;- terrain(bathy_smoothed, v = \"slope\", unit = \"degrees\")\n\n# Reclassify based on established thresholds\n# Reclassification matrix format: [lower_bound, upper_bound, class_id]\nreclass_matrix &lt;- matrix(c(\n  0.0, 0.1, 1,  # 1 = Abyssal Plains\n  0.1, 1.2, 2,  # 2 = Continental Rise\n  1.2, 90,  3   # 3 = Slope / Other topographic features\n), ncol = 3, byrow = TRUE)\n\nmacro_relief &lt;- classify(slope_deg, reclass_matrix)\n\n\n\n3.3. Bathymetric Position Index (BPI)\nThe BPI delineates critical retention or exposure topographic features, such as valleys, canyons, and seamounts, which are essential proxies for benthic habitats.\n\n# Example: Broad-scale BPI using a larger focal neighborhood\nscale_factor &lt;- 25\nbpi_broad &lt;- bathy_smoothed - focal(bathy_smoothed, w = matrix(1, scale_factor, scale_factor), fun = mean)"
+  },
+  {
+    "objectID": "index.html#metadata-and-data-archiving-zenodo-github-integration",
+    "href": "index.html#metadata-and-data-archiving-zenodo-github-integration",
+    "title": "REVIMAR-MAP: Benthic Marine Habitats Mapping",
+    "section": "4. Metadata and Data Archiving (Zenodo & GitHub Integration)",
+    "text": "4. Metadata and Data Archiving (Zenodo & GitHub Integration)\nThe resulting geospatial datasets are archived on Zenodo to ensure long-term custody, generating a permanent DOI that links back to the official GitHub repository for algorithm version control.\n\n# Retrieve Zenodo token and initialize manager\nzenodo_token &lt;- Sys.getenv(\"ZENODO_TOKEN\")\nzenodo &lt;- ZenodoManager$new(token = zenodo_token)\n\n# Retrieve the official record (e.g., creating a new version)\nrecord_id &lt;- \"22834505\"\nmy_deposit &lt;- zenodo$depositRecordVersion(record_id)\n\n# Update metadata for the new release\nmy_deposit$setVersion(\"0.5\")\nmy_deposit$setLicense(\"cc-by-4.0\")\nmy_deposit$setKeywords(c(\"R\", \"Marine Habitats\", \"Benthic\", \"Active Development\"))\n\n# Link to the GitHub repository containing this script\nmy_deposit$addRelatedIdentifier(\n  relation = \"isSupplementedBy\", \n  identifier = \"[https://github.com/mma-brasil/revimar-map](https://github.com/mma-brasil/revimar-map)\",\n  scheme = \"url\"\n)\n\n# Synchronize metadata with Zenodo (Publishing step requires explicit confirmation)\nmy_deposit &lt;- zenodo$depositRecord(my_deposit)\n# zenodo$publishRecord(my_deposit$id)"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  }
+]
