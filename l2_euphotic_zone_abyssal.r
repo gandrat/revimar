@@ -15,10 +15,10 @@ package.check <- lapply(packages, FUN = function(x) {
 # 1. Load the base rasters (Provinces and Bathymetry) ----
 crs_albers_brasil <- "+proj=aea +lat_0=-12 +lon_0=-54 +lat_1=-2 +lat_2=-22 +x_0=5000000 +y_0=10000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
 
-l1 <- rast('output_data/l1_benthic_provinces_v01.tif')
+l1 <- rast('output_data/l1_benthic_provinces.tif')
 plot(l1, main = "L1 Benthic Provinces")
 
-bat <- rast('output_data/bathymetry_gebco_v01.tif')
+bat <- rast('output_data/bathymetry_gebco.tif')
 
 
 # 2. Temporal Aggregation of Zeu ----
@@ -184,8 +184,8 @@ ggsave('figures/l2_plot_area_v01.jpg', width = 20, height = 15, dpi = 150, units
 
 # 11. Export data ----
 writeRaster(geom_photic_id, 
-            'output_data/l2_province_photic_zones_v01.tif', 
+            'output_data/l2_province_photic_zones_v05.tif', 
             datatype = "INT1U",
             overwrite = TRUE)
 
-write.csv(photic_summary, 'output_data/habitat_area_summary_v01.csv', row.names = FALSE)
+write.csv(photic_summary, 'output_data/habitat_area_summary_v05.csv', row.names = FALSE)
