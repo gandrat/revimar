@@ -18,7 +18,7 @@ meu_deposito$setResourceType("dataset")
 
 # 4. Anexando o mapa final exportado pelo pacote 'terra'
 zenodo$uploadFile("output_data/l2_province_photic_zones.tif", record = meu_deposito)
-zenodo$uploadFile("output_data/l1_benthic_provinces_v2.tif", record = meu_deposito)
+zenodo$uploadFile("output_data/l1_benthic_provinces.tif", record = meu_deposito)
 
 # 5. Publicação automática (Gera o DOI para os dados)
 zenodo$publishRecord(meu_deposito$id)

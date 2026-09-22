@@ -156,6 +156,6 @@ benthic_zones_m<-mask(benthic_zones_m,ss)
 plot(benthic_zones_m)
 
 # 7. Export the final classified product
-writeRaster(benthic_zones_m, "output_data/l1_benthic_provinces_v01.tif", overwrite = TRUE)
-writeRaster(bat,'output_data/bathymetry_gebco_v01.tif')
+writeRaster(benthic_zones_m, "output_data/l1_benthic_provinces_v05.tif", overwrite = TRUE)
+writeRaster(bat,'output_data/bathymetry_gebco.tif')
 write_sf(ss,'output_data/study_site.shp')

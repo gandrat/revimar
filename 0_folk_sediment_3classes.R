@@ -45,10 +45,7 @@ writeRaster(sed_norm, 'output_data/l0_sediment_norm.tif', overwrite = TRUE)
 
 # 3. Calculate Sand/Mud Ratio (Diagram X-Axis) ----
 # Summing normalized sand and mud
-
 sum_sand_mud <- sand_norm + mud_norm
-plot(sum_sand_mud)
-res(sed_norm)
 
 # Calculate the relative percentage of sand in the sand-mud fraction
 # We use ifel to avoid division by zero in pixels that are 100% gravel
@@ -81,22 +78,22 @@ folk_classes <-
   # --- TIER 0: Biogenic (Binary flag == 1) ---
   ifel(bio == 1, 4, 
        
-       # --- TIER 1: >= 3% Gravel ---
-       ifel(gravel_norm >= 30, 3, 
+       # --- TIER 1: >= 5% Gravel ---
+       ifel(gravel_norm >= 5, 3, 
             
-            # --- TIER 2: < 30% Gravel, Mud:Sand ratio > 9:1 (Sand < 10%) ---
-            ifel(gravel_norm < 30 & sand_ratio < 10, 1, 
+            # --- TIER 2: < 5% Gravel, Mud:Sand ratio > 9:1 (Sand < 10%) ---
+            ifel(gravel_norm < 5 & sand_ratio < 10, 1, 
                  
                  # --- TIER 3: < 5% Gravel, Mud:Sand ratio <= 9:1 (Sand >= 10%) ---
-                 ifel(gravel_norm < 30 & sand_ratio >= 10, 2, 
+                 ifel(gravel_norm < 5 & sand_ratio >= 10, 2, 
                       
                       NA )))) # Close all parentheses.
-plot(folk_classes)
+
 writeRaster(folk_classes,
-            'output_data/l0_sediment_folk_4_v1.tif',
+            'output_data/l0_sediment_folk_4_v2.tif',
             overwrite=T)
 
-
+folk_classes<-rast('output_data/l0_folk_classification_biogenic4.tif')
 hist(folk_classes)
 # 5. Convert to Categorical Raster (Metadata) ----
 folk_classes <- as.factor(folk_classes)
@@ -131,7 +128,7 @@ folk_color_table <- data.frame(
 coltab(folk_classes) <- folk_color_table
 # Visualization
 
-jpeg(filename = "figures/l0_sediment_folk_4class_v1.jpg", 
+jpeg(filename = "figures/l0_sediment_folk_4class.jpg", 
      width = 40,       # Width of the image
      height = 50,       # Height of the image
      units = "cm",     # Units for width/height (inches)
@@ -144,7 +141,7 @@ dev.off()
 
 plot(folk_classes)
 writeRaster(folk_classes, 
-            'output_data/l0_folk_classification_biogenic4_v1.tif', 
+            'output_data/l0_folk_classification_biogenic4.tif', 
             overwrite = TRUE)
 
 # 7. Calculate Area ----
