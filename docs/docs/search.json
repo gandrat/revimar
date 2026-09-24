@@ -33,12 +33,5 @@
     "title": "REVIMAR-MAP: Benthic Marine Habitats Mapping",
     "section": "4. Metadata and Data Archiving (Zenodo & GitHub Integration)",
     "text": "4. Metadata and Data Archiving (Zenodo & GitHub Integration)\nThe resulting geospatial datasets are archived on Zenodo to ensure long-term custody, generating a permanent DOI that links back to the official GitHub repository for algorithm version control.\n\n# Retrieve Zenodo token and initialize manager\nzenodo_token &lt;- Sys.getenv(\"ZENODO_TOKEN\")\nzenodo &lt;- ZenodoManager$new(token = zenodo_token)\n\n# Retrieve the official record (e.g., creating a new version)\nrecord_id &lt;- \"22834505\"\nmy_deposit &lt;- zenodo$depositRecordVersion(record_id)\n\n# Update metadata for the new release\nmy_deposit$setVersion(\"0.5\")\nmy_deposit$setLicense(\"cc-by-4.0\")\nmy_deposit$setKeywords(c(\"R\", \"Marine Habitats\", \"Benthic\", \"Active Development\"))\n\n# Link to the GitHub repository containing this script\nmy_deposit$addRelatedIdentifier(\n  relation = \"isSupplementedBy\", \n  identifier = \"[https://github.com/mma-brasil/revimar-map](https://github.com/mma-brasil/revimar-map)\",\n  scheme = \"url\"\n)\n\n# Synchronize metadata with Zenodo (Publishing step requires explicit confirmation)\nmy_deposit &lt;- zenodo$depositRecord(my_deposit)\n# zenodo$publishRecord(my_deposit$id)"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
   }
 ]

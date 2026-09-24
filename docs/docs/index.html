@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Tiago Gandra">
+<meta name="dcterms.date" content="2026-09-24">
 
-<title>About – docs</title>
+<title>REVIMAR-MAP: Benthic Marine Habitats Mapping – docs</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -75,7 +77,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-4bb70320978d3681f22c1b7cad2d9728.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-d5ee58bd0dcd54652fce003310b3065e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -128,11 +130,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./about.html" aria-current="page"> 
+    <a class="nav-link" href="./about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -146,22 +148,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#project-overview" id="toc-project-overview" class="nav-link active" data-scroll-target="#project-overview">1. Project Overview</a></li>
+  <li><a href="#environment-setup" id="toc-environment-setup" class="nav-link" data-scroll-target="#environment-setup">2. Environment Setup</a></li>
+  <li><a href="#geospatial-processing-pipeline" id="toc-geospatial-processing-pipeline" class="nav-link" data-scroll-target="#geospatial-processing-pipeline">3. Geospatial Processing Pipeline</a>
+  <ul class="collapse">
+  <li><a href="#bathymetric-smoothing" id="toc-bathymetric-smoothing" class="nav-link" data-scroll-target="#bathymetric-smoothing">3.1. Bathymetric Smoothing</a></li>
+  <li><a href="#slope-and-macro-relief-compartmentation" id="toc-slope-and-macro-relief-compartmentation" class="nav-link" data-scroll-target="#slope-and-macro-relief-compartmentation">3.2. Slope and Macro-relief Compartmentation</a></li>
+  <li><a href="#bathymetric-position-index-bpi" id="toc-bathymetric-position-index-bpi" class="nav-link" data-scroll-target="#bathymetric-position-index-bpi">3.3. Bathymetric Position Index (BPI)</a></li>
+  </ul></li>
+  <li><a href="#metadata-and-data-archiving-zenodo-github-integration" id="toc-metadata-and-data-archiving-zenodo-github-integration" class="nav-link" data-scroll-target="#metadata-and-data-archiving-zenodo-github-integration">4. Metadata and Data Archiving (Zenodo &amp; GitHub Integration)</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">About</h1>
+<h1 class="title">REVIMAR-MAP: Benthic Marine Habitats Mapping</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tiago Gandra </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 24, 2026</p>
+    </div>
+  </div>
   
     
   </div>
@@ -171,15 +199,95 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>About this site</p>
+<section id="project-overview" class="level2">
+<h2 class="anchored" data-anchor-id="project-overview">1. Project Overview</h2>
+<p>The <strong>REVIMAR-MAP</strong> project aims to provide a cartographic and methodological baseline for the predictive classification of benthic marine habitats on the Brazilian continental margin. This open-science workflow generates wall-to-wall spatial models to support Marine Spatial Planning (MSP) and environmental assessments, aligning with the guidelines of the Ministry of Environment and Climate Change (MMA) and actions funded by FUNBIO.</p>
+</section>
+<section id="environment-setup" class="level2">
+<h2 class="anchored" data-anchor-id="environment-setup">2. Environment Setup</h2>
+<p>Load the required geospatial modeling and metadata management libraries.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(zen4R)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</section>
+<section id="geospatial-processing-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="geospatial-processing-pipeline">3. Geospatial Processing Pipeline</h2>
+<p>The methodology adopts a multiscalar top-down approach. We use physical variables such as geomorphology, photic zones, and sedimentology as proxies for biodiversity distribution.</p>
+<section id="bathymetric-smoothing" class="level3">
+<h3 class="anchored" data-anchor-id="bathymetric-smoothing">3.1. Bathymetric Smoothing</h3>
+<p>Raw bathymetric data (e.g., GEBCO) is smoothed using a 7x7 focal mean filter to remove high-frequency noise and local artifacts before deriving morphometric variables.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load raw bathymetry raster</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>bathy_raw <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"input_data/gebco_raw.tif"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a 7x7 weight matrix for the focal mean</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>focal_weights <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="at">nrow =</span> <span class="dv">7</span>, <span class="at">ncol =</span> <span class="dv">7</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the focal filter</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>bathy_smoothed <span class="ot">&lt;-</span> <span class="fu">focal</span>(bathy_raw, <span class="at">w =</span> focal_weights, <span class="at">fun =</span> mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="slope-and-macro-relief-compartmentation" class="level3">
+<h3 class="anchored" data-anchor-id="slope-and-macro-relief-compartmentation">3.2. Slope and Macro-relief Compartmentation</h3>
+<p>Strict slope thresholds partition the macro relief, establishing boundaries between distinct geomorphological zones. For instance, separating the Continental Rise (0.1° to 1.2°) from the Abyssal Plains (&lt; 0.1°).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate slope in degrees</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>slope_deg <span class="ot">&lt;-</span> <span class="fu">terrain</span>(bathy_smoothed, <span class="at">v =</span> <span class="st">"slope"</span>, <span class="at">unit =</span> <span class="st">"degrees"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclassify based on established thresholds</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclassification matrix format: [lower_bound, upper_bound, class_id]</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>reclass_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.0</span>, <span class="fl">0.1</span>, <span class="dv">1</span>,  <span class="co"># 1 = Abyssal Plains</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.1</span>, <span class="fl">1.2</span>, <span class="dv">2</span>,  <span class="co"># 2 = Continental Rise</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fl">1.2</span>, <span class="dv">90</span>,  <span class="dv">3</span>   <span class="co"># 3 = Slope / Other topographic features</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>), <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>macro_relief <span class="ot">&lt;-</span> <span class="fu">classify</span>(slope_deg, reclass_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="bathymetric-position-index-bpi" class="level3">
+<h3 class="anchored" data-anchor-id="bathymetric-position-index-bpi">3.3. Bathymetric Position Index (BPI)</h3>
+<p>The BPI delineates critical retention or exposure topographic features, such as valleys, canyons, and seamounts, which are essential proxies for benthic habitats.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: Broad-scale BPI using a larger focal neighborhood</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>scale_factor <span class="ot">&lt;-</span> <span class="dv">25</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>bpi_broad <span class="ot">&lt;-</span> bathy_smoothed <span class="sc">-</span> <span class="fu">focal</span>(bathy_smoothed, <span class="at">w =</span> <span class="fu">matrix</span>(<span class="dv">1</span>, scale_factor, scale_factor), <span class="at">fun =</span> mean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="metadata-and-data-archiving-zenodo-github-integration" class="level2">
+<h2 class="anchored" data-anchor-id="metadata-and-data-archiving-zenodo-github-integration">4. Metadata and Data Archiving (Zenodo &amp; GitHub Integration)</h2>
+<p>The resulting geospatial datasets are archived on Zenodo to ensure long-term custody, generating a permanent DOI that links back to the official GitHub repository for algorithm version control.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve Zenodo token and initialize manager</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>zenodo_token <span class="ot">&lt;-</span> <span class="fu">Sys.getenv</span>(<span class="st">"ZENODO_TOKEN"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>zenodo <span class="ot">&lt;-</span> ZenodoManager<span class="sc">$</span><span class="fu">new</span>(<span class="at">token =</span> zenodo_token)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve the official record (e.g., creating a new version)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>record_id <span class="ot">&lt;-</span> <span class="st">"22834505"</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>my_deposit <span class="ot">&lt;-</span> zenodo<span class="sc">$</span><span class="fu">depositRecordVersion</span>(record_id)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Update metadata for the new release</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>my_deposit<span class="sc">$</span><span class="fu">setVersion</span>(<span class="st">"0.5"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>my_deposit<span class="sc">$</span><span class="fu">setLicense</span>(<span class="st">"cc-by-4.0"</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>my_deposit<span class="sc">$</span><span class="fu">setKeywords</span>(<span class="fu">c</span>(<span class="st">"R"</span>, <span class="st">"Marine Habitats"</span>, <span class="st">"Benthic"</span>, <span class="st">"Active Development"</span>))</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Link to the GitHub repository containing this script</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>my_deposit<span class="sc">$</span><span class="fu">addRelatedIdentifier</span>(</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">relation =</span> <span class="st">"isSupplementedBy"</span>, </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">identifier =</span> <span class="st">"[https://github.com/mma-brasil/revimar-map](https://github.com/mma-brasil/revimar-map)"</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">scheme =</span> <span class="st">"url"</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Synchronize metadata with Zenodo (Publishing step requires explicit confirmation)</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>my_deposit <span class="ot">&lt;-</span> zenodo<span class="sc">$</span><span class="fu">depositRecord</span>(my_deposit)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co"># zenodo$publishRecord(my_deposit$id)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
