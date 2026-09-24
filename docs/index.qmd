@@ -1,0 +1,105 @@
+---
+title: "REVIMAR-MAP: Benthic Marine Habitats Mapping"
+author: "Tiago Gandra"
+date: today
+format:
+  html:
+    toc: true
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## 1. Project Overview
+
+The **REVIMAR-MAP** project aims to provide a cartographic and methodological baseline for the predictive classification of benthic marine habitats on the Brazilian continental margin. This open-science workflow generates wall-to-wall spatial models to support Marine Spatial Planning (MSP) and environmental assessments, aligning with the guidelines of the Ministry of Environment and Climate Change (MMA) and actions funded by FUNBIO.
+
+## 2. Environment Setup
+
+Load the required geospatial modeling and metadata management libraries.
+
+```{r libraries}
+library(terra)
+library(zen4R)
+library(dplyr)
+```
+
+## 3. Geospatial Processing Pipeline
+
+The methodology adopts a multiscalar top-down approach. We use physical variables such as geomorphology, photic zones, and sedimentology as proxies for biodiversity distribution.
+
+### 3.1. Bathymetric Smoothing
+
+Raw bathymetric data (e.g., GEBCO) is smoothed using a 7x7 focal mean filter to remove high-frequency noise and local artifacts before deriving morphometric variables.
+
+```{r smoothing, eval=FALSE}
+# Load raw bathymetry raster
+bathy_raw <- rast("input_data/gebco_raw.tif")
+
+# Define a 7x7 weight matrix for the focal mean
+focal_weights <- matrix(1, nrow = 7, ncol = 7)
+
+# Apply the focal filter
+bathy_smoothed <- focal(bathy_raw, w = focal_weights, fun = mean, na.rm = TRUE)
+```
+
+### 3.2. Slope and Macro-relief Compartmentation
+
+Strict slope thresholds partition the macro relief, establishing boundaries between distinct geomorphological zones. For instance, separating the Continental Rise (0.1° to 1.2°) from the Abyssal Plains (\< 0.1°).
+
+```{r slope_calculation, eval=FALSE}
+# Calculate slope in degrees
+slope_deg <- terrain(bathy_smoothed, v = "slope", unit = "degrees")
+
+# Reclassify based on established thresholds
+# Reclassification matrix format: [lower_bound, upper_bound, class_id]
+reclass_matrix <- matrix(c(
+  0.0, 0.1, 1,  # 1 = Abyssal Plains
+  0.1, 1.2, 2,  # 2 = Continental Rise
+  1.2, 90,  3   # 3 = Slope / Other topographic features
+), ncol = 3, byrow = TRUE)
+
+macro_relief <- classify(slope_deg, reclass_matrix)
+```
+
+### 3.3. Bathymetric Position Index (BPI)
+
+The BPI delineates critical retention or exposure topographic features, such as valleys, canyons, and seamounts, which are essential proxies for benthic habitats.
+
+```{r bpi, eval=FALSE}
+# Example: Broad-scale BPI using a larger focal neighborhood
+scale_factor <- 25
+bpi_broad <- bathy_smoothed - focal(bathy_smoothed, w = matrix(1, scale_factor, scale_factor), fun = mean)
+```
+
+## 4. Metadata and Data Archiving (Zenodo & GitHub Integration)
+
+The resulting geospatial datasets are archived on Zenodo to ensure long-term custody, generating a permanent DOI that links back to the official GitHub repository for algorithm version control.
+
+```{r zenodo_archiving, eval=FALSE}
+# Retrieve Zenodo token and initialize manager
+zenodo_token <- Sys.getenv("ZENODO_TOKEN")
+zenodo <- ZenodoManager$new(token = zenodo_token)
+
+# Retrieve the official record (e.g., creating a new version)
+record_id <- "22834505"
+my_deposit <- zenodo$depositRecordVersion(record_id)
+
+# Update metadata for the new release
+my_deposit$setVersion("0.5")
+my_deposit$setLicense("cc-by-4.0")
+my_deposit$setKeywords(c("R", "Marine Habitats", "Benthic", "Active Development"))
+
+# Link to the GitHub repository containing this script
+my_deposit$addRelatedIdentifier(
+  relation = "isSupplementedBy", 
+  identifier = "[https://github.com/mma-brasil/revimar-map](https://github.com/mma-brasil/revimar-map)",
+  scheme = "url"
+)
+
+# Synchronize metadata with Zenodo (Publishing step requires explicit confirmation)
+my_deposit <- zenodo$depositRecord(my_deposit)
+# zenodo$publishRecord(my_deposit$id)
+```
