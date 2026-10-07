@@ -2,7 +2,7 @@
 ## Data from BNDO (Banco Nacional de Dados Oceanográficos)
 
 # 1. Loading Packages ----
-packages <- c('sf', 'ggplot2', 'terra', 'dplyr', 'Rsagacmd')
+packages <- c('sf', 'ggplot2', 'terra', 'dplyr', 'Rsagacmd','janitor')
 
 # Function to dynamically check, install (if missing), and load packages
 package.check <- lapply(packages, FUN = function(x) {
@@ -24,7 +24,9 @@ crs_albers_brasil <- "+proj=aea +lat_0=-12 +lon_0=-54 +lat_1=-2 +lat_2=-22 +x_0=
 # 3. Reading and Preprocessing Data ----
 
 ## 3.1 Points Data Setup ----
-pts <- read_sf('input_data/bndo_eez/bndo_eez.shp')
+pts <- read_sf('data/raw/bndo_sediment/bndo_eez.shp')
+max(pts$data_hora)
+
 
 # Reprojecting to Albers Equal Area
 pts <- st_transform(pts, crs = crs_albers_brasil)
@@ -38,12 +40,59 @@ pts <- pts %>% transmute(
   sand = areia,
   gravel = cascalho,
   mud = argila + silte,          # Grouping fines into 'mud' for Folk classification
-  tot = areia + cascalho + argila + silte
+  carb=NA,
+  tot = areia + cascalho + argila + silte,
+  
 )
 
+hist(pts$tot)
+table(pts$tot)
 # Filtering out inconsistent samples (ensuring granulometric fractions sum to exactly 100%)
 pts <- pts %>% filter(tot == 100)
 
+
+## Reading new sediment points (downloaded in sep 2026)
+pts2026<-read.delim('data/raw/bndo_2026/GEO-BRASIL-FAS',sep = ';')
+pts2026<-clean_names(pts2026)
+
+pts2026 <- pts2026 %>% transmute(
+  id = numero_da_analise_read_me,
+  lon = longitude_deg,
+  lat = latitude_deg,
+  time = as.POSIXct(data_hora, tz = "America/Sao_Paulo"),
+  sand = as.numeric(percentual_de_areia_read_me),
+  gravel = as.numeric(percentual_de_cascalho_read_me),
+  mud = as.numeric(percentual_de_argila_read_me) + as.numeric(percentual_de_silte_read_me),
+  carb = as.numeric(percentual_de_carbonato_read_me)
+)
+
+pts2026<-st_as_sf(pts2026,
+                  coords=c('lon','lat'),
+                  crs=4326,
+                  remove=F)
+
+pts2026<-pts2026%>%mutate(tot=sand+gravel+mud)
+
+pts2026<-pts2026%>%filter(tot<=100)
+
+plot(pts2026)
+pts2026 <- st_transform(pts2026, crs = crs_albers_brasil)
+
+write_sf(pts2026,'data/raw/bndo_2026/bndo_2026.gpkg')
+
+pts
+pts_all<-rbind(pts,pts2026)
+
+#Removing duplicates
+pts_all_clean <- pts_all %>%
+  distinct(geometry, .keep_all = TRUE)%>%
+  mutate(time=format(time,"%Y-%m-%d %H:%M:%S"))
+
+
+
+write_sf(pts_all_clean,'data/processed/shapes/gis_revimar.gpkg',layer='bndo')
+
+pts<-pts_all_clean
 ## 3.2 Splitting Data: Interpolation vs. Accuracy Assessment ----
 # Setting aside a 5% holdout dataset for validation
 n_acc <- round(nrow(pts) * 0.05)
@@ -55,9 +104,6 @@ pts <- pts %>% mutate(use = 'interp')
 index <- sample(seq_len(nrow(pts)), size = n_acc)
 pts$use[index] <- 'accuracy'
 
-# Exporting the preprocessed and classified point data
-write_sf(pts, 'input_data/bndo.shp')
-
 # Separating the datasets based on the control column
 pts_interp <- pts %>% filter(use == 'interp')
 pts_acc <- pts %>% filter(use == 'accuracy')
@@ -65,7 +111,7 @@ pts_acc <- pts %>% filter(use == 'accuracy')
 # 4. Creating Spatial Masks ----
 
 ## 4.1 Exclusive Economic Zone (EEZ) Mask ----
-eez <- read_sf('input_data/study_area.shp')
+eez <- read_sf('data/raw/study_area.shp')
 eez <- st_transform(eez, crs_albers_brasil)
 
 # Creating a base raster grid with 1km (1000m) resolution
@@ -74,28 +120,29 @@ mask <- rasterize(eez, mask, field = 'id')
 
 # Ensuring the mask strictly adheres to the Albers projection and resolution
 mask <- project(mask, crs_albers_brasil, res = 1000)
-
+plot(mask)
 # writeRaster(mask, 'input_data/eez_albers.tif', overwrite = TRUE)
 
 ## 4.2 Bathymetric Model Mask ----
-bat <- rast('input_data/batimetria_dhn.tif')
-
+bat <- rast('data/raw/dtm_leplac/batimetria_dhn.tif')
+crs(bat)
+res(bat)
+plot(bat)
 # Aligning bathymetry to the EEZ grid
-bat <- project(bat, mask)
+bat <- project(bat, mask,method='near')
 bat <- mask(bat, mask)
 res(bat)
 plot(bat, main = "Bathymetry")
 
-# writeRaster(bat, 'input_data/batimetria_dhn_albers.tif', overwrite = TRUE)
 
 # Creating a Boolean mask to restrict modeling to depths shallower than 1000m
 # (e.g., continental shelf and upper slope)
-mask_bat <- bat >= -1000
+mask_bat <- bat >= -1500
 plot(mask_bat, main = "Bathymetric Mask (>= -1000m)")
 
 # Converting 0s to NA to optimize processing in subsequent steps
 mask_bat <- subst(mask_bat, from = 0, to = NA)
-# writeRaster(mask_bat, 'input_data/mask_bat.tif', overwrite = TRUE)
+writeRaster(mask_bat, 'data/processed/batimetria_mask.tif', overwrite = TRUE)
 
 # 5. Interpolating Sediments ----
 # Using Natural Neighbors (Sibson's method) via SAGA GIS [Image of Natural Neighbor interpolation Voronoi area stealing]
@@ -107,11 +154,11 @@ sand <- saga$grid_gridding$natural_neighbour(
   target_definition = 1,     # Tells SAGA to use a user-defined grid
   target_template = mask     # Provides the grid template (our 1km EEZ mask)
 )
-
+plot(sand)
 # Applying the bathymetric depth limit
 sand <- mask(sand, mask_bat)
 plot(sand, main = "Interpolated Sand (%)")
-# writeRaster(sand, 'output_data/nn_sand.tif', overwrite = TRUE)
+writeRaster(sand, 'data/processed/nn_sand.tif', overwrite = TRUE)
 
 ## 5.2 Mud Interpolation ----
 mud <- saga$grid_gridding$natural_neighbour(
@@ -123,7 +170,7 @@ mud <- saga$grid_gridding$natural_neighbour(
 
 mud <- mask(mud, mask_bat)
 plot(mud, main = "Interpolated Mud (%)")
-# writeRaster(mud, 'output_data/nn_mud.tif', overwrite = TRUE)
+writeRaster(mud, 'data/processed/nn_mud.tif', overwrite = TRUE)
 
 ## 5.3 Gravel Interpolation ----
 gravel <- saga$grid_gridding$natural_neighbour(
@@ -135,7 +182,7 @@ gravel <- saga$grid_gridding$natural_neighbour(
 
 gravel <- mask(gravel, mask_bat)
 plot(gravel, main = "Interpolated Gravel (%)")
-# writeRaster(gravel, 'output_data/nn_gravel.tif', overwrite = TRUE)
+writeRaster(gravel, 'data/processed/nn_gravel.tif', overwrite = TRUE)
 
 # 6. Accuracy Assessment ----
 # Extracting predicted values at the locations of the holdout points
@@ -195,4 +242,4 @@ hist(t, main = "Histogram of Total Sediment Sum")
 plot(t, main = "Spatial Distribution of Sediment Sum")
 
 # Exporting the multi-band raster
-writeRaster(sed, 'output_data/sediment.tif', overwrite = TRUE)
+writeRaster(sed, 'data/processed/sediment.tif', overwrite = TRUE)

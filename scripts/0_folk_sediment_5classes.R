@@ -12,7 +12,7 @@ package.check <- lapply(packages, FUN = function(x) {
 
 # 1. Loading Environment and Data ----
 # Load the workspace from the interpolation script
-sed <- rast('output_data/sediment.tif')
+sed <- rast('data/processed/sediment.tif')
 plot(sed)
 
 # The 'sed' object is a SpatRaster containing 'sand', 'mud', and 'gravel' layers.
@@ -39,7 +39,7 @@ gravel_norm <- (gravel / total_sum) * 100
 
 sed_norm <- c(sand_norm, mud_norm, gravel_norm)
 
-writeRaster(sed_norm, 'output_data/sediment_norm.tif', overwrite = TRUE)
+writeRaster(sed_norm, 'data/processed/sediment_norm.tif', overwrite = TRUE)
 
 
 # 3. Calculate Sand/Mud Ratio (Diagram X-Axis) ----

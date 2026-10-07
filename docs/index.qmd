@@ -16,90 +16,98 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 The **REVIMAR-MAP** project aims to provide a cartographic and methodological baseline for the predictive classification of benthic marine habitats on the Brazilian continental margin. This open-science workflow generates wall-to-wall spatial models to support Marine Spatial Planning (MSP) and environmental assessments, aligning with the guidelines of the Ministry of Environment and Climate Change (MMA) and actions funded by FUNBIO.
 
-## 2. Environment Setup
+## 3. Geospatial Processing Pipeline (Level 1 - Oceanic Provinces)
 
-Load the required geospatial modeling and metadata management libraries.
+The methodology adopts a multiscalar top-down approach. The first level of the classification hierarchy (Level 1) partitions the marine environment into broad geomorphological provinces based on bathymetry, slope, and major structural features.
 
-```{r libraries}
-library(terra)
-library(zen4R)
-library(dplyr)
-```
+### 3.1. Data Preparation and Bathymetric Smoothing
 
-## 3. Geospatial Processing Pipeline
-
-The methodology adopts a multiscalar top-down approach. We use physical variables such as geomorphology, photic zones, and sedimentology as proxies for biodiversity distribution.
-
-### 3.1. Bathymetric Smoothing
-
-Raw bathymetric data (e.g., GEBCO) is smoothed using a 7x7 focal mean filter to remove high-frequency noise and local artifacts before deriving morphometric variables.
+All spatial data is standardized to the Albers Equal Area Conic projection (Brazil). The raw bathymetric data (e.g., GEBCO) is smoothed using a 7x7 focal mean filter to remove high-frequency noise and local artifacts before deriving morphometric variables.
 
 ```{r smoothing, eval=FALSE}
-# Load raw bathymetry raster
-bathy_raw <- rast("input_data/gebco_raw.tif")
+# Define Albers projection for Brazil
+crs_albers_brasil <- "+proj=aea +lat_0=-12 +lon_0=-54 +lat_1=-2 +lat_2=-22 +x_0=5000000 +y_0=10000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
 
-# Define a 7x7 weight matrix for the focal mean
-focal_weights <- matrix(1, nrow = 7, ncol = 7)
+# Load and project bathymetry
+bat_gebco <- rast('data/raw/gebco/gebco_raw.tif')
+bat <- project(bat_gebco, crs_albers_brasil)
 
-# Apply the focal filter
-bathy_smoothed <- focal(bathy_raw, w = focal_weights, fun = mean, na.rm = TRUE)
+# Clamp values to isolate marine areas (depths <= 0)
+bat <- clamp(bat, upper = 0)
+
+# Apply a 7x7 focal mean filter to smooth the terrain
+bat <- focal(bat, w = 7, fun = "mean", na.rm = TRUE)
 ```
 
-### 3.2. Slope and Macro-relief Compartmentation
+### 3.2. Slope Calculation
 
-Strict slope thresholds partition the macro relief, establishing boundaries between distinct geomorphological zones. For instance, separating the Continental Rise (0.1° to 1.2°) from the Abyssal Plains (\< 0.1°).
+Slope is essential to distinguish flat plains (basins and shelves) from steep structural zones (slopes). A focal maximum filter is also applied to emphasize the steepest gradients.
 
 ```{r slope_calculation, eval=FALSE}
 # Calculate slope in degrees
-slope_deg <- terrain(bathy_smoothed, v = "slope", unit = "degrees")
+slope_deg <- terrain(bat, v = "slope", unit = "degrees")
 
-# Reclassify based on established thresholds
-# Reclassification matrix format: [lower_bound, upper_bound, class_id]
-reclass_matrix <- matrix(c(
-  0.0, 0.1, 1,  # 1 = Abyssal Plains
-  0.1, 1.2, 2,  # 2 = Continental Rise
-  1.2, 90,  3   # 3 = Slope / Other topographic features
-), ncol = 3, byrow = TRUE)
-
-macro_relief <- classify(slope_deg, reclass_matrix)
+# Apply focal max to highlight structural breaks
+slope_degf <- focal(slope_deg, w = 7, fun = 'max', na.rm = TRUE)
 ```
 
-### 3.3. Bathymetric Position Index (BPI)
+### 3.3. Sequential Map Algebra (Province Classification)
 
-The BPI delineates critical retention or exposure topographic features, such as valleys, canyons, and seamounts, which are essential proxies for benthic habitats.
+We apply strict depth and slope thresholds using sequential map algebra to delineate the oceanic provinces.
 
-```{r bpi, eval=FALSE}
-# Example: Broad-scale BPI using a larger focal neighborhood
-scale_factor <- 25
-bpi_broad <- bathy_smoothed - focal(bathy_smoothed, w = matrix(1, scale_factor, scale_factor), fun = mean)
+```{r map_algebra, eval=FALSE}
+# Create an empty raster template based on bathymetry
+benthic_zones <- rast(bat)
+values(benthic_zones) <- NA
+
+# Class 4: Oceanic Basin (Abyssal Plains)
+# Everything deeper than 5000m, regardless of minor slope variations
+benthic_zones[is.na(benthic_zones) & bat <= -5000] <- 4
+
+# Class 1: Continental Shelf
+# Shallower than the shelf break (-250m) with gentle slopes, or strictly shallower than -90m
+benthic_zones[bat >= -250 & slope_deg < 0.5] <- 1
+benthic_zones[bat >= -90] <- 1
+
+# Class 2: Continental Slope
+# Intermediate depths with a steep gradient
+benthic_zones[is.na(benthic_zones) & bat >= -2500] <- 2
+benthic_zones[is.na(benthic_zones) & slope_deg >= 0.5 & bat >= -3500] <- 2
+
+# Class 3: Continental Rise
+# Remaining unclassified intermediate to deep waters with a gentle gradient
+benthic_zones[is.na(benthic_zones) & slope_deg >= 0.1] <- 3
+benthic_zones[is.na(benthic_zones) & bat <= -3500] <- 4
 ```
 
-## 4. Metadata and Data Archiving (Zenodo & GitHub Integration)
+### 3.4. Seamounts Integration
 
-The resulting geospatial datasets are archived on Zenodo to ensure long-term custody, generating a permanent DOI that links back to the official GitHub repository for algorithm version control.
+Isolated topographic peaks (seamounts) mapped independently in QGIS are integrated into the classification as a distinct Level 1 feature.
 
-```{r zenodo_archiving, eval=FALSE}
-# Retrieve Zenodo token and initialize manager
-zenodo_token <- Sys.getenv("ZENODO_TOKEN")
-zenodo <- ZenodoManager$new(token = zenodo_token)
+```{r seamounts, eval=FALSE}
+# Load seamounts vector and rasterize
+seamounts_vec <- read_sf('data/processed/shapes/gis_revimar.gpkg', layer = 'seamounts')
+seamounts_vec <- st_transform(seamounts_vec, crs_albers_brasil)
 
-# Retrieve the official record (e.g., creating a new version)
-record_id <- "22834505"
-my_deposit <- zenodo$depositRecordVersion(record_id)
+seamounts_rast <- rasterize(seamounts_vec, benthic_zones, field = 5, background = NA)
 
-# Update metadata for the new release
-my_deposit$setVersion("0.5")
-my_deposit$setLicense("cc-by-4.0")
-my_deposit$setKeywords(c("R", "Marine Habitats", "Benthic", "Active Development"))
+# Overlay seamounts onto the benthic zones
+benthic_zones <- cover(seamounts_rast, benthic_zones)
+```
 
-# Link to the GitHub repository containing this script
-my_deposit$addRelatedIdentifier(
-  relation = "isSupplementedBy", 
-  identifier = "[https://github.com/mma-brasil/revimar-map](https://github.com/mma-brasil/revimar-map)",
-  scheme = "url"
-)
+### 3.5. Noise Reduction and Polishing
 
-# Synchronize metadata with Zenodo (Publishing step requires explicit confirmation)
-my_deposit <- zenodo$depositRecord(my_deposit)
-# zenodo$publishRecord(my_deposit$id)
+To create a cartographically sound product, we apply noise reduction algorithms. A focal modal filter smooths boundaries, and a sieve algorithm removes isolated pixels (salt-and-pepper effect). Seamounts are reapplied at the end to ensure small, valid features are not deleted by the sieve process.
+
+```{r noise_reduction, eval=FALSE}
+# 1. Apply focal modal filter for boundary smoothing
+focal_window <- matrix(1, nrow = 21, ncol = 21)
+benthic_zones_m <- focal(benthic_zones, w = focal_window, fun = 'modal', na.rm = TRUE)
+
+# 2. Sieve: Remove small isolated polygon fragments (< 5000 pixels)
+pixels_tresholds <- 5000
+benthic_zones_c <- terra::sieve(benthic_zones_m, threshold = pixels_tresholds, directions = 8)
+
+# 3. Restore seamounts to prevent accidental deletion by the sieve
+benthic_zones_final <- cover(seamounts_rast, benthic_zones_c)
 ```
