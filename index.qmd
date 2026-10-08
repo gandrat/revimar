@@ -16,11 +16,21 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 The **REVIMAR-MAP** project aims to provide a cartographic and methodological baseline for the predictive classification of benthic marine habitats on the Brazilian continental margin. This open-science workflow generates wall-to-wall spatial models to support Marine Spatial Planning (MSP) and environmental assessments, aligning with the guidelines of the Ministry of Environment and Climate Change (MMA) and actions funded by FUNBIO.
 
-## 3. Geospatial Processing Pipeline (Level 1 - Oceanic Provinces)
+### 1.1. Scripts and Data
+
+To ensure full transparency and reproducibility, this project separates the source code from the heavy geospatial outputs:
+1. **L1: Geomorphological Provinces** (e.g., Shelf, Slope, Basin, Seamounts)
+2. **L2: Biological Zones** (e.g., Photic, Mesophotic, Bathyal, Abyssal)
+3. **L3: Substrate** (e.g., Mud, Sand, Gravel, Reefs)
+
+* **Source Code:** The complete R scripts and processing pipelines are publicly available on GitHub at [https://github.com/gandrat/revimar](https://github.com/gandrat/revimar).
+* **Geospatial Data:** Due to storage limitations for version control, the final models and their associated metadata are hosted and versioned on Zenodo. The datasets can be accessed via the following record: [https://zenodo.org/records/22834505](https://zenodo.org/records/22834505).
+
+## 2. Level 1 - Oceanic Provinces
 
 The methodology adopts a multiscalar top-down approach. The first level of the classification hierarchy (Level 1) partitions the marine environment into broad geomorphological provinces based on bathymetry, slope, and major structural features.
 
-### 3.1. Data Preparation and Bathymetric Smoothing
+### 2.1. Data Preparation and Bathymetric Smoothing
 
 All spatial data is standardized to the Albers Equal Area Conic projection (Brazil). The raw bathymetric data (e.g., GEBCO) is smoothed using a 7x7 focal mean filter to remove high-frequency noise and local artifacts before deriving morphometric variables.
 
@@ -39,7 +49,7 @@ bat <- clamp(bat, upper = 0)
 bat <- focal(bat, w = 7, fun = "mean", na.rm = TRUE)
 ```
 
-### 3.2. Slope Calculation
+### 2.2. Slope Calculation
 
 Slope is essential to distinguish flat plains (basins and shelves) from steep structural zones (slopes). A focal maximum filter is also applied to emphasize the steepest gradients.
 
@@ -51,7 +61,7 @@ slope_deg <- terrain(bat, v = "slope", unit = "degrees")
 slope_degf <- focal(slope_deg, w = 7, fun = 'max', na.rm = TRUE)
 ```
 
-### 3.3. Sequential Map Algebra (Province Classification)
+### 2.3. Sequential Map Algebra (Province Classification)
 
 We apply strict depth and slope thresholds using sequential map algebra to delineate the oceanic provinces.
 
@@ -80,7 +90,7 @@ benthic_zones[is.na(benthic_zones) & slope_deg >= 0.1] <- 3
 benthic_zones[is.na(benthic_zones) & bat <= -3500] <- 4
 ```
 
-### 3.4. Seamounts Integration
+### 2.4. Seamounts Integration
 
 Isolated topographic peaks (seamounts) mapped independently in QGIS are integrated into the classification as a distinct Level 1 feature.
 
@@ -95,7 +105,7 @@ seamounts_rast <- rasterize(seamounts_vec, benthic_zones, field = 5, background 
 benthic_zones <- cover(seamounts_rast, benthic_zones)
 ```
 
-### 3.5. Noise Reduction and Polishing
+### 2.5. Noise Reduction and Polishing
 
 To create a cartographically sound product, we apply noise reduction algorithms. A focal modal filter smooths boundaries, and a sieve algorithm removes isolated pixels (salt-and-pepper effect). Seamounts are reapplied at the end to ensure small, valid features are not deleted by the sieve process.
 
@@ -104,10 +114,256 @@ To create a cartographically sound product, we apply noise reduction algorithms.
 focal_window <- matrix(1, nrow = 21, ncol = 21)
 benthic_zones_m <- focal(benthic_zones, w = focal_window, fun = 'modal', na.rm = TRUE)
 
-# 2. Sieve: Remove small isolated polygon fragments (< 5000 pixels)
-pixels_tresholds <- 5000
+# 2. Sieve: Remove small isolated polygon fragments (< 50000 pixels)
+pixels_tresholds <- 50000
 benthic_zones_c <- terra::sieve(benthic_zones_m, threshold = pixels_tresholds, directions = 8)
 
 # 3. Restore seamounts to prevent accidental deletion by the sieve
 benthic_zones_final <- cover(seamounts_rast, benthic_zones_c)
+```
+## 3. Level 2 - Biological Zones
+
+The second hierarchical level of the REVIMAR-MAP project integrates biological proxies into the geomorphological base. Using climatological data from the Copernicus Marine Service (CMEMS), we model the benthic light availability (Euphotic vs. Aphotic zones) and stratify deep-water features into Bathyal and Abyssal zones.
+
+### 3.1. Temporal Aggregation of Euphotic Depth (Zeu)
+
+We use the CMEMS Euphotic Depth (`Zeu`) NetCDF product. To establish a robust climatological baseline, we calculate the cell-wise median across the time series and align it spatially with the Level 1 Geomorphological Provinces.
+
+```{r zeu_aggregation, eval=FALSE}
+# Load the L1 Provinces and Bathymetry
+l1 <- rast('outputs/l1_benthic_provinces.tif')
+bat <- rast('data/processed/bathymetry_gebco.tif')
+
+# Load the Copernicus CMEMS Euphotic Depth (Zeu) NetCDF file
+zeu <- rast('data/raw/cmems_zeu/cmems_mod_glo_bgc_my_0.083deg-lmtl_P1D-i_1773341382551.nc')
+
+# Calculate the climatological median and match spatial extents
+zeu_med <- median(zeu, na.rm = TRUE)
+zeu_med <- project(zeu_med, l1)
+zeu_med <- mask(zeu_med, bat)
+
+```
+
+### 3.2. Defining the Euphotic Benthos
+Sunlight reaches the seafloor where the euphotic depth (Zeu) is greater than or equal to the water column depth (bathymetry). We create a boolean mask to map these productive shallow-water habitats.
+
+```{r light_reaches, eval=FALSE}
+# Create a boolean mask: TRUE where light reaches the bottom
+zeu_bat <- zeu_med >= (bat * -1)
+
+# Convert TRUE/FALSE to numeric 1 (Euphotic) and 0 (Aphotic)
+zeu_bat_num <- ifel(zeu_bat, 1, 0)
+
+```
+### 3.3. Habitat Overlap and Deep Water Stratification
+The physical provinces (Shelf, Slope, Rise, Basin, Seamounts) are intersected with the photic data. Furthermore, deep-water environments are strictly stratified into Bathyal (> -4000m) and Abyssal (<= -4000m) zones, following global marine ecology standards.
+
+```{r reclass, eval=FALSE}
+# Combine rasters into unique two-digit IDs: L1 (1-5) * 10 + Photic (0-1)
+geom_photic <- (l1 * 10) + zeu_bat_num
+
+# Clean-up: Deep environments (Slope, Rise, Basin) are inherently aphotic
+# Stratification Threshold: 4000m depth boundary for Bathyal vs Abyssal
+geom_photic <- ifel(geom_photic == 20 & bat <= -4000, 22, geom_photic) # Slope
+geom_photic <- ifel(geom_photic == 30 & bat <= -4000, 32, geom_photic) # Rise
+geom_photic <- ifel(geom_photic == 40 & bat <= -4000, 42, geom_photic) # Basin
+
+# Isolate deep seamounts (Depth < -200m)
+geom_photic <- ifel(geom_photic %in% c(50, 51) & bat < -200, 52, geom_photic)
+
+```
+### 3.4. Final Classification and Attribute Table
+The raw IDs are reclassified into a sequential continuous index (1 to 9). We then embed a customized Raster Attribute Table (RAT) and color palette directly into the .tif metadata to ensure standardized visualization in QGIS or downstream applications.
+
+```{r symbols, eval=FALSE}
+# Sequential Reclassification Matrix
+alpha_matrix <- matrix(c(
+  11, 1,  # A1. Euphotic Shelf
+  10, 2,  # A2. Mesophotic Shelf
+  20, 3,  # B3. Bathyal Slope
+  22, 3,  # Merged B3
+  30, 4,  # C3. Bathyal Continental Rise
+  32, 5,  # C4. Abyssal Continental Rise
+  40, 6,  # D4. Abyssal Oceanic Basin
+  42, 6,  # Merged D4
+  51, 7,  # E1. Euphotic Seamount
+  50, 8,  # E2. Mesophotic Seamount
+  52, 9   # E3. Bathyal Seamount
+), ncol = 2, byrow = TRUE)
+
+geom_photic_id <- classify(geom_photic, alpha_matrix)
+geom_photic_id <- as.factor(geom_photic_id)
+
+# Export the L2 classified model
+writeRaster(geom_photic_id, 
+            'outputs/l2_biological_zones.tif', 
+            datatype = "INT1U",
+            overwrite = TRUE)
+
+```
+
+
+## 4. Level 3 - Substrate and Benthic Habitat Integration
+
+The third hierarchical level combines structural geomorphology, benthic light penetration (Level 2), and seafloor substrate composition to yield the continuous benthic habitat map. Substrate characteristics are derived from an adapted EUNIS sediment classification model (Long, 2006) merged with biogenic reef formations. To avoid propagating uncertainty from sparse open-ocean sampling, substrate modeling is constrained exclusively to photic shelf domains and shallow seamount peaks.
+
+### 4.1. Substrate Classification Framework (Modified EUNIS Folk)
+
+Sediment textures are classified from normalized gravel, sand, and mud fractions into four primary textural classes, supplemented by an independent biogenic substrate class:
+
+1. **Coarse sediment:** Defined where gravel is dominant or forms significant gravelly sand mixtures:
+   $$\text{Gravel} \ge 80\% \quad \lor \quad \left(\text{Gravel} \ge 5\% \quad \land \quad \frac{\text{Sand}}{\text{Sand} + \text{Mud}} \ge 90\%\right)$$
+2. **Mixed sediment:** Heterogeneous mixtures with intermediate gravel content:
+   $$5\% \le \text{Gravel} < 80\% \quad \land \quad \frac{\text{Sand}}{\text{Sand} + \text{Mud}} < 90\%$$
+3. **Sand:** Sand-dominated benthos with negligible gravel:
+   $$\text{Gravel} < 5\% \quad \land \quad \frac{\text{Sand}}{\text{Sand} + \text{Mud}} \ge 90\%$$
+4. **Mud to muddy sand:** Silt- and clay-dominated benthos:
+   $$\text{Gravel} < 5\% \quad \land \quad \frac{\text{Sand}}{\text{Sand} + \text{Mud}} < 90\%$$
+5. **Biogenic substrate:** High-priority structural formations (e.g., rhodolith beds, biogenic banks) rasterized directly from surveyed vector geometries.
+
+```{r substrate_alignment, eval=FALSE}
+library(terra)
+library(dplyr)
+library(scales)
+
+# Load Level 2 biological zones and the EUNIS 5-class substrate raster
+geom_photic <- rast('outputs/l2_biological_zones.tif')
+sediments   <- rast('data/processed/sediment_eunis_classification.tif')
+
+# Align sediment raster to reference photic grid using nearest neighbor
+# Nearest neighbor preserves discrete integer class IDs without numerical smoothing
+sediments_aligned <- project(sediments, geom_photic, method = 'near')
+```
+
+### 4.2. Spatial Map Algebra (L2 x Substrate Intersection)
+
+The operational intersection assigns detailed sedimentary subdivisions (IDs 1 to 5) to the shallow and photic structural zones, while deep-sea domains retain their macro-geomorphological identities:
+
+* **Subdivided zones:** Euphotic Shelf (`1`), Mesophotic Shelf (`2`), Euphotic Seamount (`7`), Mesophotic Seamount (`8`).
+* **Deep macro-zones:** Bathyal Slope (`3`), Bathyal Rise (`4`), Abyssal Rise (`5`), Abyssal Basin (`6`), Bathyal Seamount (`9`).
+
+```{r map_algebra_intersection, eval=FALSE}
+# Execute conditional map algebra
+# Multiply zone IDs by 100 to generate distinct 3-digit identifiers (e.g., 101, 102... 805)
+habitats_raw <- ifel(
+  geom_photic %in% c(1, 2, 7, 8),
+  (geom_photic * 100) + sediments_aligned,
+  geom_photic * 100
+)
+```
+
+### 4.3. Mathematical Color Blending and Attribute Dictionary
+
+To ensure that composite classes preserve visual hierarchy and cartographic consistency, colors are synthesized by blending the hexadecimal hue of the parent geomorphological zone ($C_{\text{geo}}$) with the sediment texture color ($C_{\text{sed}}$) via linear RGB interpolation:
+
+$$C_{\text{blended}} = \text{round}\left(C_{\text{geo}} \times (1 - w) + C_{\text{sed}} \times w\right)$$
+
+where a mixing weight of $w = 0.60$ gives slight dominance to the sedimentary texture while retaining the distinctive tonal identity of the bathymetric province.
+
+```{r master_dictionary_palette, eval=FALSE}
+# Define structural zones accepting substrate data
+base_zones <- data.frame(
+  Zone_ID   = c(1, 2, 7, 8),
+  Prefix    = c("A1", "A2", "E1", "E2"),
+  Zone_Name = c("Euphotic Shelf", "Mesophotic Shelf", "Euphotic Seamount", "Mesophotic Seamount"),
+  Geo_Hex   = c("#00FFFF", "#00688B", "#FF4500", "#8B0000"),
+  stringsAsFactors = FALSE
+)
+
+# Define EUNIS substrate classes and color palette
+folk_classes <- data.frame(
+  Sed_ID   = 1:5,
+  Letter   = letters[1:5],
+  Sed_Name = c("Coarse", "Mixed", "Sand", "Mud", "Biogenic"),
+  Sed_Hex  = c("#B95246", "#C68F8A", "#F6D173", "#7F9953", "#FF69B4"),
+  stringsAsFactors = FALSE
+)
+
+# Linear RGB color blending function
+mix_colors <- function(c1, c2, weight = 0.6) {
+  rgb1 <- col2rgb(c1)
+  rgb2 <- col2rgb(c2)
+  blended <- round(rgb1 * (1 - weight) + rgb2 * weight)
+  rgb(blended[1], blended[2], blended[3], maxColorValue = 255)
+}
+
+# Generate theoretical attribute combinations for shallow environments
+shallow_table <- expand.grid(Zone_ID = c(1, 2, 7, 8), Sed_ID = 1:5) %>%
+  left_join(base_zones, by = "Zone_ID") %>%
+  left_join(folk_classes, by = "Sed_ID") %>%
+  rowwise() %>%
+  mutate(
+    Raw_ID       = (Zone_ID * 100) + Sed_ID,
+    Habitat_Name = paste0(Prefix, Letter, ". ", Sed_Name, " ", Zone_Name),
+    color        = mix_colors(Geo_Hex, Sed_Hex, weight = 0.6)
+  ) %>%
+  ungroup() %>%
+  select(Raw_ID, Habitat_Name, color)
+
+# Define standalone deep-water domains without substrate subdivision
+deep_table <- data.frame(
+  Raw_ID       = c(300, 400, 500, 600, 900),
+  Habitat_Name = c(
+    "B3. Bathyal Slope",
+    "C3. Bathyal Continental Rise",
+    "C4. Abyssal Continental Rise",
+    "D4. Abyssal Oceanic Basin",
+    "E3. Bathyal Seamount"
+  ),
+  color        = c("#FFA500", "#FFD700", "#B8860B", "#000050", "#8C3100"),
+  stringsAsFactors = FALSE
+)
+
+# Merge into a single master reference dictionary
+master_table <- bind_rows(shallow_table, deep_table) %>%
+  arrange(Raw_ID)
+```
+
+### 4.4. Optimization and Native 8-bit GeoTIFF Export
+
+The raw map algebra values produce sparse, multi-digit codes ($101$ to $900$) that exceed default byte ranges. To maximize software compatibility, reduce disk footprints, and embed visualization styles directly into the raster:
+
+1. Active raster cell values are extracted using frequency statistics.
+2. The dictionary is subsetted to observed classes and indexed sequentially from $1$ to $N$.
+3. The raster is reclassified to contiguous 8-bit unsigned integers (`INT1U`).
+4. Both the **Raster Attribute Table (RAT)** and the **Color Look-Up Table (CLUT)** are embedded directly into the GeoTIFF container.
+
+```{r rat_clut_export, eval=FALSE}
+# Identify active cell values present in the spatial domain
+present_ids <- freq(habitats_raw)$value
+
+# Filter dictionary and assign sequential 8-bit integer IDs (1 to N)
+final_rat <- master_table %>%
+  filter(Raw_ID %in% present_ids) %>%
+  mutate(ID_8bit = row_number())
+
+# Reclassify raw raster to compact 8-bit sequence
+reclass_matrix <- as.matrix(final_rat[, c("Raw_ID", "ID_8bit")])
+habitats_8bit  <- classify(habitats_raw, reclass_matrix, others = NA)
+
+# Convert SpatRaster to categorical factor
+habitats_8bit <- as.factor(habitats_8bit)
+
+# Embed Raster Attribute Table (RAT)
+levels(habitats_8bit) <- data.frame(
+  ID      = final_rat$ID_8bit,
+  Habitat = final_rat$Habitat_Name
+)
+
+# Embed Color Look-Up Table (CLUT)
+coltab(habitats_8bit) <- data.frame(
+  value = final_rat$ID_8bit,
+  color = final_rat$color
+)
+
+# Export optimized 8-bit unsigned GeoTIFF
+writeRaster(
+  habitats_8bit,
+  filename  = "outputs/l3_benthic_habitats_v1.tif",
+  datatype  = "INT1U",
+  overwrite = TRUE
+)
+
+# Export accompanying CSV legend
+write.csv(final_rat, "outputs/l3_benthic_habitats_legend.csv", row.names = FALSE)
 ```

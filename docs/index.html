@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Tiago Gandra">
-<meta name="dcterms.date" content="2026-10-07">
+<meta name="dcterms.date" content="2026-10-08">
 
 <title>REVIMAR-MAP: Benthic Marine Habitats Mapping – docs</title>
 <style>
@@ -106,6 +106,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -154,14 +183,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#project-overview" id="toc-project-overview" class="nav-link active" data-scroll-target="#project-overview">1. Project Overview</a></li>
-  <li><a href="#geospatial-processing-pipeline-level-1---oceanic-provinces" id="toc-geospatial-processing-pipeline-level-1---oceanic-provinces" class="nav-link" data-scroll-target="#geospatial-processing-pipeline-level-1---oceanic-provinces">3. Geospatial Processing Pipeline (Level 1 - Oceanic Provinces)</a>
+  <li><a href="#project-overview" id="toc-project-overview" class="nav-link active" data-scroll-target="#project-overview">1. Project Overview</a>
   <ul class="collapse">
-  <li><a href="#data-preparation-and-bathymetric-smoothing" id="toc-data-preparation-and-bathymetric-smoothing" class="nav-link" data-scroll-target="#data-preparation-and-bathymetric-smoothing">3.1. Data Preparation and Bathymetric Smoothing</a></li>
-  <li><a href="#slope-calculation" id="toc-slope-calculation" class="nav-link" data-scroll-target="#slope-calculation">3.2. Slope Calculation</a></li>
-  <li><a href="#sequential-map-algebra-province-classification" id="toc-sequential-map-algebra-province-classification" class="nav-link" data-scroll-target="#sequential-map-algebra-province-classification">3.3. Sequential Map Algebra (Province Classification)</a></li>
-  <li><a href="#seamounts-integration" id="toc-seamounts-integration" class="nav-link" data-scroll-target="#seamounts-integration">3.4. Seamounts Integration</a></li>
-  <li><a href="#noise-reduction-and-polishing" id="toc-noise-reduction-and-polishing" class="nav-link" data-scroll-target="#noise-reduction-and-polishing">3.5. Noise Reduction and Polishing</a></li>
+  <li><a href="#scripts-and-data" id="toc-scripts-and-data" class="nav-link" data-scroll-target="#scripts-and-data">1.1. Scripts and Data</a></li>
+  </ul></li>
+  <li><a href="#level-1---oceanic-provinces" id="toc-level-1---oceanic-provinces" class="nav-link" data-scroll-target="#level-1---oceanic-provinces">2. Level 1 - Oceanic Provinces</a>
+  <ul class="collapse">
+  <li><a href="#data-preparation-and-bathymetric-smoothing" id="toc-data-preparation-and-bathymetric-smoothing" class="nav-link" data-scroll-target="#data-preparation-and-bathymetric-smoothing">2.1. Data Preparation and Bathymetric Smoothing</a></li>
+  <li><a href="#slope-calculation" id="toc-slope-calculation" class="nav-link" data-scroll-target="#slope-calculation">2.2. Slope Calculation</a></li>
+  <li><a href="#sequential-map-algebra-province-classification" id="toc-sequential-map-algebra-province-classification" class="nav-link" data-scroll-target="#sequential-map-algebra-province-classification">2.3. Sequential Map Algebra (Province Classification)</a></li>
+  <li><a href="#seamounts-integration" id="toc-seamounts-integration" class="nav-link" data-scroll-target="#seamounts-integration">2.4. Seamounts Integration</a></li>
+  <li><a href="#noise-reduction-and-polishing" id="toc-noise-reduction-and-polishing" class="nav-link" data-scroll-target="#noise-reduction-and-polishing">2.5. Noise Reduction and Polishing</a></li>
+  </ul></li>
+  <li><a href="#level-2---biological-zones" id="toc-level-2---biological-zones" class="nav-link" data-scroll-target="#level-2---biological-zones">3. Level 2 - Biological Zones</a>
+  <ul class="collapse">
+  <li><a href="#temporal-aggregation-of-euphotic-depth-zeu" id="toc-temporal-aggregation-of-euphotic-depth-zeu" class="nav-link" data-scroll-target="#temporal-aggregation-of-euphotic-depth-zeu">3.1. Temporal Aggregation of Euphotic Depth (Zeu)</a></li>
+  <li><a href="#defining-the-euphotic-benthos" id="toc-defining-the-euphotic-benthos" class="nav-link" data-scroll-target="#defining-the-euphotic-benthos">3.2. Defining the Euphotic Benthos</a></li>
+  <li><a href="#habitat-overlap-and-deep-water-stratification" id="toc-habitat-overlap-and-deep-water-stratification" class="nav-link" data-scroll-target="#habitat-overlap-and-deep-water-stratification">3.3. Habitat Overlap and Deep Water Stratification</a></li>
+  <li><a href="#final-classification-and-attribute-table" id="toc-final-classification-and-attribute-table" class="nav-link" data-scroll-target="#final-classification-and-attribute-table">3.4. Final Classification and Attribute Table</a></li>
+  </ul></li>
+  <li><a href="#level-3---substrate-and-benthic-habitat-integration" id="toc-level-3---substrate-and-benthic-habitat-integration" class="nav-link" data-scroll-target="#level-3---substrate-and-benthic-habitat-integration">4. Level 3 - Substrate and Benthic Habitat Integration</a>
+  <ul class="collapse">
+  <li><a href="#substrate-classification-framework-modified-eunis-folk" id="toc-substrate-classification-framework-modified-eunis-folk" class="nav-link" data-scroll-target="#substrate-classification-framework-modified-eunis-folk">4.1. Substrate Classification Framework (Modified EUNIS Folk)</a></li>
+  <li><a href="#spatial-map-algebra-l2-x-substrate-intersection" id="toc-spatial-map-algebra-l2-x-substrate-intersection" class="nav-link" data-scroll-target="#spatial-map-algebra-l2-x-substrate-intersection">4.2. Spatial Map Algebra (L2 x Substrate Intersection)</a></li>
+  <li><a href="#mathematical-color-blending-and-attribute-dictionary" id="toc-mathematical-color-blending-and-attribute-dictionary" class="nav-link" data-scroll-target="#mathematical-color-blending-and-attribute-dictionary">4.3. Mathematical Color Blending and Attribute Dictionary</a></li>
+  <li><a href="#optimization-and-native-8-bit-geotiff-export" id="toc-optimization-and-native-8-bit-geotiff-export" class="nav-link" data-scroll-target="#optimization-and-native-8-bit-geotiff-export">4.4. Optimization and Native 8-bit GeoTIFF Export</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -188,7 +234,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 7, 2026</p>
+      <p class="date">October 8, 2026</p>
     </div>
   </div>
   
@@ -203,12 +249,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="project-overview" class="level2">
 <h2 class="anchored" data-anchor-id="project-overview">1. Project Overview</h2>
 <p>The <strong>REVIMAR-MAP</strong> project aims to provide a cartographic and methodological baseline for the predictive classification of benthic marine habitats on the Brazilian continental margin. This open-science workflow generates wall-to-wall spatial models to support Marine Spatial Planning (MSP) and environmental assessments, aligning with the guidelines of the Ministry of Environment and Climate Change (MMA) and actions funded by FUNBIO.</p>
+<section id="scripts-and-data" class="level3">
+<h3 class="anchored" data-anchor-id="scripts-and-data">1.1. Scripts and Data</h3>
+<p>To ensure full transparency and reproducibility, this project separates the source code from the heavy geospatial outputs: 1. <strong>L1: Geomorphological Provinces</strong> (e.g., Shelf, Slope, Basin, Seamounts) 2. <strong>L2: Biological Zones</strong> (e.g., Photic, Mesophotic, Bathyal, Abyssal) 3. <strong>L3: Substrate</strong> (e.g., Mud, Sand, Gravel, Reefs)</p>
+<ul>
+<li><strong>Source Code:</strong> The complete R scripts and processing pipelines are publicly available on GitHub at <a href="https://github.com/gandrat/revimar">https://github.com/gandrat/revimar</a>.</li>
+<li><strong>Geospatial Data:</strong> Due to storage limitations for version control, the final models and their associated metadata are hosted and versioned on Zenodo. The datasets can be accessed via the following record: <a href="https://zenodo.org/records/22834505">https://zenodo.org/records/22834505</a>.</li>
+</ul>
 </section>
-<section id="geospatial-processing-pipeline-level-1---oceanic-provinces" class="level2">
-<h2 class="anchored" data-anchor-id="geospatial-processing-pipeline-level-1---oceanic-provinces">3. Geospatial Processing Pipeline (Level 1 - Oceanic Provinces)</h2>
+</section>
+<section id="level-1---oceanic-provinces" class="level2">
+<h2 class="anchored" data-anchor-id="level-1---oceanic-provinces">2. Level 1 - Oceanic Provinces</h2>
 <p>The methodology adopts a multiscalar top-down approach. The first level of the classification hierarchy (Level 1) partitions the marine environment into broad geomorphological provinces based on bathymetry, slope, and major structural features.</p>
 <section id="data-preparation-and-bathymetric-smoothing" class="level3">
-<h3 class="anchored" data-anchor-id="data-preparation-and-bathymetric-smoothing">3.1. Data Preparation and Bathymetric Smoothing</h3>
+<h3 class="anchored" data-anchor-id="data-preparation-and-bathymetric-smoothing">2.1. Data Preparation and Bathymetric Smoothing</h3>
 <p>All spatial data is standardized to the Albers Equal Area Conic projection (Brazil). The raw bathymetric data (e.g., GEBCO) is smoothed using a 7x7 focal mean filter to remove high-frequency noise and local artifacts before deriving morphometric variables.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define Albers projection for Brazil</span></span>
@@ -226,7 +280,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="slope-calculation" class="level3">
-<h3 class="anchored" data-anchor-id="slope-calculation">3.2. Slope Calculation</h3>
+<h3 class="anchored" data-anchor-id="slope-calculation">2.2. Slope Calculation</h3>
 <p>Slope is essential to distinguish flat plains (basins and shelves) from steep structural zones (slopes). A focal maximum filter is also applied to emphasize the steepest gradients.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate slope in degrees</span></span>
@@ -237,7 +291,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="sequential-map-algebra-province-classification" class="level3">
-<h3 class="anchored" data-anchor-id="sequential-map-algebra-province-classification">3.3. Sequential Map Algebra (Province Classification)</h3>
+<h3 class="anchored" data-anchor-id="sequential-map-algebra-province-classification">2.3. Sequential Map Algebra (Province Classification)</h3>
 <p>We apply strict depth and slope thresholds using sequential map algebra to delineate the oceanic provinces.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an empty raster template based on bathymetry</span></span>
@@ -265,7 +319,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="seamounts-integration" class="level3">
-<h3 class="anchored" data-anchor-id="seamounts-integration">3.4. Seamounts Integration</h3>
+<h3 class="anchored" data-anchor-id="seamounts-integration">2.4. Seamounts Integration</h3>
 <p>Isolated topographic peaks (seamounts) mapped independently in QGIS are integrated into the classification as a distinct Level 1 feature.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load seamounts vector and rasterize</span></span>
@@ -279,19 +333,255 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="noise-reduction-and-polishing" class="level3">
-<h3 class="anchored" data-anchor-id="noise-reduction-and-polishing">3.5. Noise Reduction and Polishing</h3>
+<h3 class="anchored" data-anchor-id="noise-reduction-and-polishing">2.5. Noise Reduction and Polishing</h3>
 <p>To create a cartographically sound product, we apply noise reduction algorithms. A focal modal filter smooths boundaries, and a sieve algorithm removes isolated pixels (salt-and-pepper effect). Seamounts are reapplied at the end to ensure small, valid features are not deleted by the sieve process.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Apply focal modal filter for boundary smoothing</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>focal_window <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="at">nrow =</span> <span class="dv">21</span>, <span class="at">ncol =</span> <span class="dv">21</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>benthic_zones_m <span class="ot">&lt;-</span> <span class="fu">focal</span>(benthic_zones, <span class="at">w =</span> focal_window, <span class="at">fun =</span> <span class="st">'modal'</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Sieve: Remove small isolated polygon fragments (&lt; 5000 pixels)</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>pixels_tresholds <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Sieve: Remove small isolated polygon fragments (&lt; 50000 pixels)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>pixels_tresholds <span class="ot">&lt;-</span> <span class="dv">50000</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>benthic_zones_c <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">sieve</span>(benthic_zones_m, <span class="at">threshold =</span> pixels_tresholds, <span class="at">directions =</span> <span class="dv">8</span>)</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Restore seamounts to prevent accidental deletion by the sieve</span></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>benthic_zones_final <span class="ot">&lt;-</span> <span class="fu">cover</span>(seamounts_rast, benthic_zones_c)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="level-2---biological-zones" class="level2">
+<h2 class="anchored" data-anchor-id="level-2---biological-zones">3. Level 2 - Biological Zones</h2>
+<p>The second hierarchical level of the REVIMAR-MAP project integrates biological proxies into the geomorphological base. Using climatological data from the Copernicus Marine Service (CMEMS), we model the benthic light availability (Euphotic vs.&nbsp;Aphotic zones) and stratify deep-water features into Bathyal and Abyssal zones.</p>
+<section id="temporal-aggregation-of-euphotic-depth-zeu" class="level3">
+<h3 class="anchored" data-anchor-id="temporal-aggregation-of-euphotic-depth-zeu">3.1. Temporal Aggregation of Euphotic Depth (Zeu)</h3>
+<p>We use the CMEMS Euphotic Depth (<code>Zeu</code>) NetCDF product. To establish a robust climatological baseline, we calculate the cell-wise median across the time series and align it spatially with the Level 1 Geomorphological Provinces.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the L1 Provinces and Bathymetry</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>l1 <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">'outputs/l1_benthic_provinces.tif'</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>bat <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">'data/processed/bathymetry_gebco.tif'</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the Copernicus CMEMS Euphotic Depth (Zeu) NetCDF file</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>zeu <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">'data/raw/cmems_zeu/cmems_mod_glo_bgc_my_0.083deg-lmtl_P1D-i_1773341382551.nc'</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the climatological median and match spatial extents</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>zeu_med <span class="ot">&lt;-</span> <span class="fu">median</span>(zeu, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>zeu_med <span class="ot">&lt;-</span> <span class="fu">project</span>(zeu_med, l1)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>zeu_med <span class="ot">&lt;-</span> <span class="fu">mask</span>(zeu_med, bat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="defining-the-euphotic-benthos" class="level3">
+<h3 class="anchored" data-anchor-id="defining-the-euphotic-benthos">3.2. Defining the Euphotic Benthos</h3>
+<p>Sunlight reaches the seafloor where the euphotic depth (Zeu) is greater than or equal to the water column depth (bathymetry). We create a boolean mask to map these productive shallow-water habitats.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a boolean mask: TRUE where light reaches the bottom</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>zeu_bat <span class="ot">&lt;-</span> zeu_med <span class="sc">&gt;=</span> (bat <span class="sc">*</span> <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert TRUE/FALSE to numeric 1 (Euphotic) and 0 (Aphotic)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>zeu_bat_num <span class="ot">&lt;-</span> <span class="fu">ifel</span>(zeu_bat, <span class="dv">1</span>, <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="habitat-overlap-and-deep-water-stratification" class="level3">
+<h3 class="anchored" data-anchor-id="habitat-overlap-and-deep-water-stratification">3.3. Habitat Overlap and Deep Water Stratification</h3>
+<p>The physical provinces (Shelf, Slope, Rise, Basin, Seamounts) are intersected with the photic data. Furthermore, deep-water environments are strictly stratified into Bathyal (&gt; -4000m) and Abyssal (&lt;= -4000m) zones, following global marine ecology standards.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine rasters into unique two-digit IDs: L1 (1-5) * 10 + Photic (0-1)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>geom_photic <span class="ot">&lt;-</span> (l1 <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span> zeu_bat_num</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean-up: Deep environments (Slope, Rise, Basin) are inherently aphotic</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratification Threshold: 4000m depth boundary for Bathyal vs Abyssal</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>geom_photic <span class="ot">&lt;-</span> <span class="fu">ifel</span>(geom_photic <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> bat <span class="sc">&lt;=</span> <span class="sc">-</span><span class="dv">4000</span>, <span class="dv">22</span>, geom_photic) <span class="co"># Slope</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>geom_photic <span class="ot">&lt;-</span> <span class="fu">ifel</span>(geom_photic <span class="sc">==</span> <span class="dv">30</span> <span class="sc">&amp;</span> bat <span class="sc">&lt;=</span> <span class="sc">-</span><span class="dv">4000</span>, <span class="dv">32</span>, geom_photic) <span class="co"># Rise</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>geom_photic <span class="ot">&lt;-</span> <span class="fu">ifel</span>(geom_photic <span class="sc">==</span> <span class="dv">40</span> <span class="sc">&amp;</span> bat <span class="sc">&lt;=</span> <span class="sc">-</span><span class="dv">4000</span>, <span class="dv">42</span>, geom_photic) <span class="co"># Basin</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Isolate deep seamounts (Depth &lt; -200m)</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>geom_photic <span class="ot">&lt;-</span> <span class="fu">ifel</span>(geom_photic <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">51</span>) <span class="sc">&amp;</span> bat <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">200</span>, <span class="dv">52</span>, geom_photic)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="final-classification-and-attribute-table" class="level3">
+<h3 class="anchored" data-anchor-id="final-classification-and-attribute-table">3.4. Final Classification and Attribute Table</h3>
+<p>The raw IDs are reclassified into a sequential continuous index (1 to 9). We then embed a customized Raster Attribute Table (RAT) and color palette directly into the .tif metadata to ensure standardized visualization in QGIS or downstream applications.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sequential Reclassification Matrix</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>alpha_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="dv">11</span>, <span class="dv">1</span>,  <span class="co"># A1. Euphotic Shelf</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="dv">10</span>, <span class="dv">2</span>,  <span class="co"># A2. Mesophotic Shelf</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="dv">20</span>, <span class="dv">3</span>,  <span class="co"># B3. Bathyal Slope</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="dv">22</span>, <span class="dv">3</span>,  <span class="co"># Merged B3</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="dv">30</span>, <span class="dv">4</span>,  <span class="co"># C3. Bathyal Continental Rise</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="dv">32</span>, <span class="dv">5</span>,  <span class="co"># C4. Abyssal Continental Rise</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="dv">40</span>, <span class="dv">6</span>,  <span class="co"># D4. Abyssal Oceanic Basin</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="dv">42</span>, <span class="dv">6</span>,  <span class="co"># Merged D4</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="dv">51</span>, <span class="dv">7</span>,  <span class="co"># E1. Euphotic Seamount</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="dv">50</span>, <span class="dv">8</span>,  <span class="co"># E2. Mesophotic Seamount</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="dv">52</span>, <span class="dv">9</span>   <span class="co"># E3. Bathyal Seamount</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>), <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>geom_photic_id <span class="ot">&lt;-</span> <span class="fu">classify</span>(geom_photic, alpha_matrix)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>geom_photic_id <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(geom_photic_id)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Export the L2 classified model</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(geom_photic_id, </span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">'outputs/l2_biological_zones.tif'</span>, </span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">datatype =</span> <span class="st">"INT1U"</span>,</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>            <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="level-3---substrate-and-benthic-habitat-integration" class="level2">
+<h2 class="anchored" data-anchor-id="level-3---substrate-and-benthic-habitat-integration">4. Level 3 - Substrate and Benthic Habitat Integration</h2>
+<p>The third hierarchical level combines structural geomorphology, benthic light penetration (Level 2), and seafloor substrate composition to yield the continuous benthic habitat map. Substrate characteristics are derived from an adapted EUNIS sediment classification model (Long, 2006) merged with biogenic reef formations. To avoid propagating uncertainty from sparse open-ocean sampling, substrate modeling is constrained exclusively to photic shelf domains and shallow seamount peaks.</p>
+<section id="substrate-classification-framework-modified-eunis-folk" class="level3">
+<h3 class="anchored" data-anchor-id="substrate-classification-framework-modified-eunis-folk">4.1. Substrate Classification Framework (Modified EUNIS Folk)</h3>
+<p>Sediment textures are classified from normalized gravel, sand, and mud fractions into four primary textural classes, supplemented by an independent biogenic substrate class:</p>
+<ol type="1">
+<li><strong>Coarse sediment:</strong> Defined where gravel is dominant or forms significant gravelly sand mixtures: <span class="math display">\[\text{Gravel} \ge 80\% \quad \lor \quad \left(\text{Gravel} \ge 5\% \quad \land \quad \frac{\text{Sand}}{\text{Sand} + \text{Mud}} \ge 90\%\right)\]</span></li>
+<li><strong>Mixed sediment:</strong> Heterogeneous mixtures with intermediate gravel content: <span class="math display">\[5\% \le \text{Gravel} &lt; 80\% \quad \land \quad \frac{\text{Sand}}{\text{Sand} + \text{Mud}} &lt; 90\%\]</span></li>
+<li><strong>Sand:</strong> Sand-dominated benthos with negligible gravel: <span class="math display">\[\text{Gravel} &lt; 5\% \quad \land \quad \frac{\text{Sand}}{\text{Sand} + \text{Mud}} \ge 90\%\]</span></li>
+<li><strong>Mud to muddy sand:</strong> Silt- and clay-dominated benthos: <span class="math display">\[\text{Gravel} &lt; 5\% \quad \land \quad \frac{\text{Sand}}{\text{Sand} + \text{Mud}} &lt; 90\%\]</span></li>
+<li><strong>Biogenic substrate:</strong> High-priority structural formations (e.g., rhodolith beds, biogenic banks) rasterized directly from surveyed vector geometries.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Level 2 biological zones and the EUNIS 5-class substrate raster</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>geom_photic <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">'outputs/l2_biological_zones.tif'</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>sediments   <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">'data/processed/sediment_eunis_classification.tif'</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Align sediment raster to reference photic grid using nearest neighbor</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Nearest neighbor preserves discrete integer class IDs without numerical smoothing</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>sediments_aligned <span class="ot">&lt;-</span> <span class="fu">project</span>(sediments, geom_photic, <span class="at">method =</span> <span class="st">'near'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="spatial-map-algebra-l2-x-substrate-intersection" class="level3">
+<h3 class="anchored" data-anchor-id="spatial-map-algebra-l2-x-substrate-intersection">4.2. Spatial Map Algebra (L2 x Substrate Intersection)</h3>
+<p>The operational intersection assigns detailed sedimentary subdivisions (IDs 1 to 5) to the shallow and photic structural zones, while deep-sea domains retain their macro-geomorphological identities:</p>
+<ul>
+<li><strong>Subdivided zones:</strong> Euphotic Shelf (<code>1</code>), Mesophotic Shelf (<code>2</code>), Euphotic Seamount (<code>7</code>), Mesophotic Seamount (<code>8</code>).</li>
+<li><strong>Deep macro-zones:</strong> Bathyal Slope (<code>3</code>), Bathyal Rise (<code>4</code>), Abyssal Rise (<code>5</code>), Abyssal Basin (<code>6</code>), Bathyal Seamount (<code>9</code>).</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute conditional map algebra</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiply zone IDs by 100 to generate distinct 3-digit identifiers (e.g., 101, 102... 805)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>habitats_raw <span class="ot">&lt;-</span> <span class="fu">ifel</span>(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  geom_photic <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">7</span>, <span class="dv">8</span>),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  (geom_photic <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">+</span> sediments_aligned,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  geom_photic <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="mathematical-color-blending-and-attribute-dictionary" class="level3">
+<h3 class="anchored" data-anchor-id="mathematical-color-blending-and-attribute-dictionary">4.3. Mathematical Color Blending and Attribute Dictionary</h3>
+<p>To ensure that composite classes preserve visual hierarchy and cartographic consistency, colors are synthesized by blending the hexadecimal hue of the parent geomorphological zone (<span class="math inline">\(C_{\text{geo}}\)</span>) with the sediment texture color (<span class="math inline">\(C_{\text{sed}}\)</span>) via linear RGB interpolation:</p>
+<p><span class="math display">\[C_{\text{blended}} = \text{round}\left(C_{\text{geo}} \times (1 - w) + C_{\text{sed}} \times w\right)\]</span></p>
+<p>where a mixing weight of <span class="math inline">\(w = 0.60\)</span> gives slight dominance to the sedimentary texture while retaining the distinctive tonal identity of the bathymetric province.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define structural zones accepting substrate data</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>base_zones <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Zone_ID   =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">7</span>, <span class="dv">8</span>),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Prefix    =</span> <span class="fu">c</span>(<span class="st">"A1"</span>, <span class="st">"A2"</span>, <span class="st">"E1"</span>, <span class="st">"E2"</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Zone_Name =</span> <span class="fu">c</span>(<span class="st">"Euphotic Shelf"</span>, <span class="st">"Mesophotic Shelf"</span>, <span class="st">"Euphotic Seamount"</span>, <span class="st">"Mesophotic Seamount"</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Geo_Hex   =</span> <span class="fu">c</span>(<span class="st">"#00FFFF"</span>, <span class="st">"#00688B"</span>, <span class="st">"#FF4500"</span>, <span class="st">"#8B0000"</span>),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define EUNIS substrate classes and color palette</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>folk_classes <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sed_ID   =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Letter   =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>],</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sed_Name =</span> <span class="fu">c</span>(<span class="st">"Coarse"</span>, <span class="st">"Mixed"</span>, <span class="st">"Sand"</span>, <span class="st">"Mud"</span>, <span class="st">"Biogenic"</span>),</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sed_Hex  =</span> <span class="fu">c</span>(<span class="st">"#B95246"</span>, <span class="st">"#C68F8A"</span>, <span class="st">"#F6D173"</span>, <span class="st">"#7F9953"</span>, <span class="st">"#FF69B4"</span>),</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Linear RGB color blending function</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>mix_colors <span class="ot">&lt;-</span> <span class="cf">function</span>(c1, c2, <span class="at">weight =</span> <span class="fl">0.6</span>) {</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  rgb1 <span class="ot">&lt;-</span> <span class="fu">col2rgb</span>(c1)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  rgb2 <span class="ot">&lt;-</span> <span class="fu">col2rgb</span>(c2)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  blended <span class="ot">&lt;-</span> <span class="fu">round</span>(rgb1 <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> weight) <span class="sc">+</span> rgb2 <span class="sc">*</span> weight)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rgb</span>(blended[<span class="dv">1</span>], blended[<span class="dv">2</span>], blended[<span class="dv">3</span>], <span class="at">maxColorValue =</span> <span class="dv">255</span>)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate theoretical attribute combinations for shallow environments</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>shallow_table <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">Zone_ID =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">7</span>, <span class="dv">8</span>), <span class="at">Sed_ID =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(base_zones, <span class="at">by =</span> <span class="st">"Zone_ID"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(folk_classes, <span class="at">by =</span> <span class="st">"Sed_ID"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">Raw_ID       =</span> (Zone_ID <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">+</span> Sed_ID,</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">Habitat_Name =</span> <span class="fu">paste0</span>(Prefix, Letter, <span class="st">". "</span>, Sed_Name, <span class="st">" "</span>, Zone_Name),</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">color        =</span> <span class="fu">mix_colors</span>(Geo_Hex, Sed_Hex, <span class="at">weight =</span> <span class="fl">0.6</span>)</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Raw_ID, Habitat_Name, color)</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Define standalone deep-water domains without substrate subdivision</span></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>deep_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">Raw_ID       =</span> <span class="fu">c</span>(<span class="dv">300</span>, <span class="dv">400</span>, <span class="dv">500</span>, <span class="dv">600</span>, <span class="dv">900</span>),</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">Habitat_Name =</span> <span class="fu">c</span>(</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">"B3. Bathyal Slope"</span>,</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">"C3. Bathyal Continental Rise"</span>,</span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">"C4. Abyssal Continental Rise"</span>,</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    <span class="st">"D4. Abyssal Oceanic Basin"</span>,</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">"E3. Bathyal Seamount"</span></span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">color        =</span> <span class="fu">c</span>(<span class="st">"#FFA500"</span>, <span class="st">"#FFD700"</span>, <span class="st">"#B8860B"</span>, <span class="st">"#000050"</span>, <span class="st">"#8C3100"</span>),</span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge into a single master reference dictionary</span></span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>master_table <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(shallow_table, deep_table) <span class="sc">%&gt;%</span></span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Raw_ID)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="optimization-and-native-8-bit-geotiff-export" class="level3">
+<h3 class="anchored" data-anchor-id="optimization-and-native-8-bit-geotiff-export">4.4. Optimization and Native 8-bit GeoTIFF Export</h3>
+<p>The raw map algebra values produce sparse, multi-digit codes (<span class="math inline">\(101\)</span> to <span class="math inline">\(900\)</span>) that exceed default byte ranges. To maximize software compatibility, reduce disk footprints, and embed visualization styles directly into the raster:</p>
+<ol type="1">
+<li>Active raster cell values are extracted using frequency statistics.</li>
+<li>The dictionary is subsetted to observed classes and indexed sequentially from <span class="math inline">\(1\)</span> to <span class="math inline">\(N\)</span>.</li>
+<li>The raster is reclassified to contiguous 8-bit unsigned integers (<code>INT1U</code>).</li>
+<li>Both the <strong>Raster Attribute Table (RAT)</strong> and the <strong>Color Look-Up Table (CLUT)</strong> are embedded directly into the GeoTIFF container.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify active cell values present in the spatial domain</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>present_ids <span class="ot">&lt;-</span> <span class="fu">freq</span>(habitats_raw)<span class="sc">$</span>value</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter dictionary and assign sequential 8-bit integer IDs (1 to N)</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>final_rat <span class="ot">&lt;-</span> master_table <span class="sc">%&gt;%</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Raw_ID <span class="sc">%in%</span> present_ids) <span class="sc">%&gt;%</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ID_8bit =</span> <span class="fu">row_number</span>())</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclassify raw raster to compact 8-bit sequence</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>reclass_matrix <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(final_rat[, <span class="fu">c</span>(<span class="st">"Raw_ID"</span>, <span class="st">"ID_8bit"</span>)])</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>habitats_8bit  <span class="ot">&lt;-</span> <span class="fu">classify</span>(habitats_raw, reclass_matrix, <span class="at">others =</span> <span class="cn">NA</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert SpatRaster to categorical factor</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>habitats_8bit <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(habitats_8bit)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Embed Raster Attribute Table (RAT)</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(habitats_8bit) <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">ID      =</span> final_rat<span class="sc">$</span>ID_8bit,</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">Habitat =</span> final_rat<span class="sc">$</span>Habitat_Name</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Embed Color Look-Up Table (CLUT)</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="fu">coltab</span>(habitats_8bit) <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> final_rat<span class="sc">$</span>ID_8bit,</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">color =</span> final_rat<span class="sc">$</span>color</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Export optimized 8-bit unsigned GeoTIFF</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>  habitats_8bit,</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename  =</span> <span class="st">"outputs/l3_benthic_habitats_v1.tif"</span>,</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">datatype  =</span> <span class="st">"INT1U"</span>,</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Export accompanying CSV legend</span></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(final_rat, <span class="st">"outputs/l3_benthic_habitats_legend.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 

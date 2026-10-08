@@ -15,33 +15,36 @@ package.check <- lapply(packages, FUN = function(x) {
 # 1. Load the base rasters (Provinces and Bathymetry) ----
 crs_albers_brasil <- "+proj=aea +lat_0=-12 +lon_0=-54 +lat_1=-2 +lat_2=-22 +x_0=5000000 +y_0=10000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
 
-l1 <- rast('output_data/l1_benthic_provinces.tif')
+l1 <- rast('outputs/l1_benthic_provinces.tif')
 plot(l1, main = "L1 Benthic Provinces")
 
-bat <- rast('output_data/bathymetry_gebco.tif')
+bat <- rast('data/processed/bathymetry_gebco.tif')
 
 
 # 2. Temporal Aggregation of Zeu ----
 # # Load the Copernicus CMEMS Euphotic Depth (Zeu) NetCDF file.
-# zeu <- rast('input_data/cmems_mod_glo_bgc_my_0.083deg-lmtl_P1D-i_1773341382551.nc')
-# 
-# # Calculate the cell-wise median across all time layers to get a climatological baseline
-# zeu_med <- median(zeu, na.rm = TRUE)
-# 
-# # 3. Spatial Alignment (Resampling and Cropping) ----
-# # Project to Albers Equal Area and mask to match bathymetry exactly
-# zeu_med <- project(zeu_med, l1)
-# zeu_med <- mask(zeu_med, bat)
-# writeRaster(zeu_med, 'input_data/zeu_cmems_2024_v2.tif', overwrite = TRUE)
-# 
-# # 4. Defining the Euphotic Benthos ----
-# # Create a boolean mask to identify where sunlight reaches the seafloor.
-# zeu_bat <- zeu_med >= (bat * -1)
-# plot(zeu_bat, main = "Light Reaches Bottom (Euphotic)")
-# writeRaster(zeu_bat, 'output_data/l0_euphotic_zone.tif', overwrite = TRUE)
+zeu <- rast('data/raw/cmems_zeu/cmems_mod_glo_bgc_my_0.083deg-lmtl_P1D-i_1773341382551.nc')
+
+# Calculate the cell-wise median across all time layers to get a climatological baseline
+zeu_med <- median(zeu, na.rm = TRUE)
+
+# 3. Spatial Alignment (Resampling and Cropping) ----
+# Project to Albers Equal Area and mask to match bathymetry exactly
+zeu_med <- project(zeu_med, l1)
+zeu_med <- mask(zeu_med, bat)
+plot(zeu_med)
+writeRaster(zeu_med, 'data/processed/zeu_cmems_2024.tif', overwrite = TRUE)
+
+# 4. Defining the Euphotic Benthos ----
+# Create a boolean mask to identify where sunlight reaches the seafloor.
+zeu_med<-rast('data/processed/zeu_cmems_2024.tif')
+zeu_bat <- zeu_med >= (bat * -1)
+plot(zeu_bat, main = "Light Reaches Bottom (Euphotic)")
+writeRaster(zeu_bat, 'data/processed/zeu_boolean.tif', overwrite = TRUE)
 
 
-zeu_bat<-rast('output_data/l0_euphotic_zone.tif')
+zeu_bat<-rast('data/processed/zeu_boolean.tif')
+
 # Convert the TRUE/FALSE boolean raster into numeric 1 (Euphotic) and 0 (Aphotic)
 zeu_bat_num <- ifel(zeu_bat, 1, 0)
 
@@ -73,13 +76,13 @@ geom_photic <- classify(geom_photic, reclass_matrix)
 ## 6.2 Isolating Abyssal vs Bathyal Zones (Threshold: -3500m)
 # We separate the deep features into Bathyal (> -2000m) and Abyssal (<= -2000m)
 # 20 = Bathyal Slope, 22 = Abyssal Slope
-geom_photic <- ifel(geom_photic == 20 & bat <= -3500, 22, geom_photic)
+geom_photic <- ifel(geom_photic == 20 & bat <= -4000, 22, geom_photic)
 
 # 30 = Bathyal Rise, 32 = Abyssal Rise
-geom_photic <- ifel(geom_photic == 30 & bat <= -3500, 32, geom_photic)
+geom_photic <- ifel(geom_photic == 30 & bat <= -4000, 32, geom_photic)
 
 # 40 = Bathyal Basin, 42 = Abyssal Basin
-geom_photic <- ifel(geom_photic == 40 & bat <= -3500, 42, geom_photic)
+geom_photic <- ifel(geom_photic == 40 & bat <= -4000, 42, geom_photic)
 
 ## 6.3 Isolating Deep Seamounts (Depth < -200m)
 geom_photic <- ifel(geom_photic %in% c(50, 51) & bat < -200, 52, geom_photic)
@@ -91,14 +94,14 @@ alpha_matrix <- matrix(c(
   11, 1,   
   10, 2,  
   20, 3,  
-  22, 4,  
-  30, 5,   
-  32, 6,   
-  40, 7,   # Merge with D4. Abyssal Oceanic Basin
-  42, 7,   
-  51, 8,   
-  50, 9,  
-  52, 10   
+  22, 3,  # Merge with B3. Bathyal Continental Slope
+  30, 4,   
+  32, 5,   
+  40, 6,   # Merge with D4. Abyssal Oceanic Basin
+  42, 6,   
+  51, 7,   
+  50, 8,  
+  52, 9   
 ), ncol = 2, byrow = TRUE)
 
 geom_photic_id <- classify(geom_photic, alpha_matrix)
@@ -107,12 +110,11 @@ geom_photic_id <- classify(geom_photic, alpha_matrix)
 geom_photic_id <- as.factor(geom_photic_id)
 
 habitat_table <- data.frame(
-  ID = 1:10,
+  ID = 1:9,
   Habitat_Zone = c(
     "A1. Euphotic Shelf",
     "A2. Mesophotic Shelf",
-    "B3. Bathyal Continental Slope",
-    "B4. Abyssal Continental Slope",
+    "B3. Bathyal Slope",
     "C3. Bathyal Continental Rise",
     "C4. Abyssal Continental Rise",
     "D4. Abyssal Oceanic Basin",
@@ -126,18 +128,17 @@ levels(geom_photic_id) <- habitat_table
 
 # 9. Defining the Color Palette ----
 color_table <- data.frame(
-  value = 1:10,
+  value = 1:9,
   color = c(
     "#00FFFF",  # 1: A1. Euphotic Shelf (Cyan)
     "#00688B",  # 2: A2. Mesophotic Shelf (Deep Sky Blue)
     "#FFA500",  # 3: B3. Bathyal Slope (Orange)
-    "#FF8C00",  # 4: B4. Abyssal Slope (Dark Orange)
-    "#FFD700",  # 5: C5. Bathyal Rise (Gold)
-    "#B8860B",  # 6: C6. Abyssal Rise (Dark Goldenrod)
-    "#000050",  # 8: C8. Abyssal Basin (Navy)
-    "#FF4500",  # 9: D1. Euphotic Seamount (Orange Red)
-    "#b50000",  # 10: D2. Mesophotic Seamount (Dark Red)
-    "#8c3100"   # 11: D3. Bathyal/Abyssal Seamount (Indigo)
+    "#FFD700",  # 4: C5. Bathyal Rise (Gold)
+    "#B8860B",  # 5: C6. Abyssal Rise (Dark Goldenrod)
+    "#000050",  # 6: C8. Abyssal Basin (Navy)
+    "#FF4500",  # 7: D1. Euphotic Seamount (Orange Red)
+    "#b50000",  # 8: D2. Mesophotic Seamount (Dark Red)
+    "#8c3100"   # 9: D3. Bathyal/Abyssal Seamount (Indigo)
   )
 )
 
@@ -147,11 +148,11 @@ plot(geom_photic_id, main = "Benthic Habitats of the Brazilian Margin (L2)")
 # 10. Statistical Summary and Export (km²) ----
 photic_summary <- as.data.frame(freq(geom_photic_id))
 # Ensure the value column is treated as integer for joining
-photic_summary$value <- 1:10
+photic_summary$value <- 1:9
 
 ## 10.1. Plot areas ----
 habitat_reference <- data.frame(
-  value = 1:10,
+  value = 1:9,
   Habitat_Zone = habitat_table$Habitat_Zone,
   color = color_table$color
 )
@@ -180,12 +181,10 @@ ggplot(plot_data, aes(x = Habitat_Zone, y = count / sum(count), fill = Habitat_Z
     panel.grid.major.x = element_blank()
   )
 
-ggsave('figures/l2_plot_area_v01.jpg', width = 20, height = 15, dpi = 150, units = 'cm', bg = 'white')
+ggsave('figures/l2_area.jpg', width = 20, height = 15, dpi = 150, units = 'cm', bg = 'white')
 
 # 11. Export data ----
 writeRaster(geom_photic_id, 
-            'output_data/l2_province_photic_zones_v05.tif', 
+            'outputs/l2_biological_zones.tif', 
             datatype = "INT1U",
             overwrite = TRUE)
-
-write.csv(photic_summary, 'output_data/habitat_area_summary_v05.csv', row.names = FALSE)

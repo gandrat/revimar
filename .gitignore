@@ -53,6 +53,7 @@ rda/
 old/
 outputs/
 data/
+gis/
 
 /.quarto/
 **/*.quarto_ipynb

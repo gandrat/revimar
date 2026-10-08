@@ -139,8 +139,8 @@ benthic_zones_m<-cover(seamounts_rast,benthic_zones_m)
 benthic_zones_c <- terra::sieve(benthic_zones_m, 
                                 threshold = 60000, 
                                 directions = 8)
-benthic_zones_c <- cover(seamounts_rast, benthic_zones_c)
-plot(benthic_zones_c)
+benthic_zones_final <- cover(seamounts_rast, benthic_zones_c)
+plot(benthic_zones_final)
 
 
 #6. Color table -------------- 
@@ -156,7 +156,7 @@ color_table_geo <- data.frame(
 )
 
 # The coltab() function embeds these colors directly into the raster's metadata
-coltab(benthic_zones_c) <- color_table_geo
+coltab(benthic_zones_final) <- color_table_geo
 
 # Create the new, simplified Raster Attribute Table (RAT)
 habitat_table <- data.frame(
@@ -170,10 +170,10 @@ habitat_table <- data.frame(
   )
 )
 
-levels(benthic_zones_c) <- habitat_table
+levels(benthic_zones_final) <- habitat_table
 
-benthic_zones_c<-mask(benthic_zones_c,ss)
-plot(benthic_zones_c)
+
+plot(benthic_zones_final)
 
 # 7. Export the final classified product
-writeRaster(benthic_zones_c, "outputs/l1_benthic_provinces.tif", overwrite = TRUE)
+writeRaster(benthic_zones_final, "outputs/l1_benthic_provinces.tif", overwrite = TRUE)

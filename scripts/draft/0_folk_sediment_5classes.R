@@ -75,6 +75,17 @@ folk_classes <-
                            NA ))))) # Close all parentheses. Anything left over becomes NA.
 
 
+# Add biogenic--------
+bio<-read_sf('gis/gis_revimar.gpkg',layer='biogenico')
+bio<-st_transform(bio, crs_albers_brasil)
+plot(bio)
+bio_rast <- rasterize(bio, sediments, touches = TRUE)
+plot(bio_rast)
+plot(sediments)
+
+sediments <- ifel(!is.na(bio_rast), 6, sediments)
+
+
 # 5. Convert to Categorical Raster (Metadata) ----
 # Notifying the terra package that this is categorical data
 folk_classes <- as.factor(folk_classes)
@@ -120,7 +131,8 @@ jpeg(filename = "figures/sediment_folk_5class.jpg",
 plot(folk_classes, main = "Sediment Folk (5-Class)")
 dev.off()
 
+plot(folk_classes, main = "Sediment Folk (5-Class)")
 
 # 7. Export Final Raster ----
 # Writing the GeoTIFF with the embedded attribute table for QGIS mapping
-writeRaster(folk_classes, 'output_data/folk_classification_5classes.tif', overwrite = TRUE)
+writeRaster(folk_classes, 'data/processed/sediment_folk_classification_5classes.tif', overwrite = TRUE)
